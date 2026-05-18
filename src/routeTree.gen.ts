@@ -9,51 +9,215 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoes'
+import { Route as AppClientesRouteImport } from './routes/_app.clientes'
+import { Route as AppContratosIndexRouteImport } from './routes/_app.contratos.index'
+import { Route as AppContratosNovoRouteImport } from './routes/_app.contratos.novo'
+import { Route as AppContratosIdRouteImport } from './routes/_app.contratos.$id'
 
-const IndexRoute = IndexRouteImport.update({
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppConfiguracoesRoute = AppConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClientesRoute = AppClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContratosIndexRoute = AppContratosIndexRouteImport.update({
+  id: '/contratos/',
+  path: '/contratos/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContratosNovoRoute = AppContratosNovoRouteImport.update({
+  id: '/contratos/novo',
+  path: '/contratos/novo',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContratosIdRoute = AppContratosIdRouteImport.update({
+  id: '/contratos/$id',
+  path: '/contratos/$id',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/login': typeof LoginRoute
+  '/clientes': typeof AppClientesRoute
+  '/configuracoes': typeof AppConfiguracoesRoute
+  '/contratos/$id': typeof AppContratosIdRoute
+  '/contratos/novo': typeof AppContratosNovoRoute
+  '/contratos/': typeof AppContratosIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/clientes': typeof AppClientesRoute
+  '/configuracoes': typeof AppConfiguracoesRoute
+  '/': typeof AppIndexRoute
+  '/contratos/$id': typeof AppContratosIdRoute
+  '/contratos/novo': typeof AppContratosNovoRoute
+  '/contratos': typeof AppContratosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/clientes': typeof AppClientesRoute
+  '/_app/configuracoes': typeof AppConfiguracoesRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/contratos/$id': typeof AppContratosIdRoute
+  '/_app/contratos/novo': typeof AppContratosNovoRoute
+  '/_app/contratos/': typeof AppContratosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/clientes'
+    | '/configuracoes'
+    | '/contratos/$id'
+    | '/contratos/novo'
+    | '/contratos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/login'
+    | '/clientes'
+    | '/configuracoes'
+    | '/'
+    | '/contratos/$id'
+    | '/contratos/novo'
+    | '/contratos'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/_app/clientes'
+    | '/_app/configuracoes'
+    | '/_app/'
+    | '/_app/contratos/$id'
+    | '/_app/contratos/novo'
+    | '/_app/contratos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/configuracoes': {
+      id: '/_app/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof AppConfiguracoesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/clientes': {
+      id: '/_app/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof AppClientesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/contratos/': {
+      id: '/_app/contratos/'
+      path: '/contratos'
+      fullPath: '/contratos/'
+      preLoaderRoute: typeof AppContratosIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/contratos/novo': {
+      id: '/_app/contratos/novo'
+      path: '/contratos/novo'
+      fullPath: '/contratos/novo'
+      preLoaderRoute: typeof AppContratosNovoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/contratos/$id': {
+      id: '/_app/contratos/$id'
+      path: '/contratos/$id'
+      fullPath: '/contratos/$id'
+      preLoaderRoute: typeof AppContratosIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppClientesRoute: typeof AppClientesRoute
+  AppConfiguracoesRoute: typeof AppConfiguracoesRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppContratosIdRoute: typeof AppContratosIdRoute
+  AppContratosNovoRoute: typeof AppContratosNovoRoute
+  AppContratosIndexRoute: typeof AppContratosIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppClientesRoute: AppClientesRoute,
+  AppConfiguracoesRoute: AppConfiguracoesRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppContratosIdRoute: AppContratosIdRoute,
+  AppContratosNovoRoute: AppContratosNovoRoute,
+  AppContratosIndexRoute: AppContratosIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
