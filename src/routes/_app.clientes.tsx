@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo, useState } from "react";
 import { db } from "@/lib/db";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, Users, Mail, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Search, Users, Mail, Phone, Plus } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/clientes")({
