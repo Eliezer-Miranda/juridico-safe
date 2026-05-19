@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, CheckCircle2, AlertTriangle, Trash2, FileText, Users, Wallet, Calendar } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertTriangle, Trash2, FileText, Users, Wallet, Calendar, Paperclip } from "lucide-react";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/format";
+import { ContractDocuments } from "@/components/ContractDocuments";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/contratos/$id")({
@@ -144,12 +145,17 @@ function ContractDetail() {
         {/* Side panels */}
         <div className="space-y-4">
           <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Users className="h-4 w-4 text-gold" /> Cliente</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Users className="h-4 w-4 text-gold" /> Prestador contratado</CardTitle></CardHeader>
             <CardContent className="space-y-1.5 text-sm">
               <Info label="Nome" value={client?.name} />
               <Info label="Documento" value={client?.document} />
               <Info label="E-mail" value={client?.email} />
               <Info label="Telefone" value={client?.phone} />
+              {client?.id && (
+                <Link to="/clientes/$id" params={{ id: String(client.id) }} className="inline-block text-xs text-gold hover:underline mt-2">
+                  Ver / editar cadastro →
+                </Link>
+              )}
             </CardContent>
           </Card>
 
@@ -192,6 +198,18 @@ function ContractDetail() {
           </Card>
         </div>
       </div>
+
+      {/* Documentos */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Paperclip className="h-4 w-4 text-gold" /> Documentos do contrato
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ContractDocuments contract={contract} />
+        </CardContent>
+      </Card>
 
       <PaymentDialog
         installment={paying}
