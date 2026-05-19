@@ -32,7 +32,7 @@ function SettingsPage() {
 
   const saveOffice = async () => {
     await db.settings.update(1, form);
-    toast.success("Dados do escritório atualizados");
+    toast.success("Dados da empresa atualizados");
   };
 
   const changePwd = async () => {
@@ -92,12 +92,12 @@ function SettingsPage() {
       </header>
 
       <Card className="bg-card border-border">
-        <CardHeader><CardTitle className="font-display flex items-center gap-2"><Building2 className="h-4 w-4 text-gold" /> Escritório</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="font-display flex items-center gap-2"><Building2 className="h-4 w-4 text-gold" /> Empresa contratante</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Nome do escritório"><Input value={form.officeName} onChange={(e) => setForm({ ...form, officeName: e.target.value })} /></Field>
-            <Field label="Advogado responsável"><Input value={form.lawyerName} onChange={(e) => setForm({ ...form, lawyerName: e.target.value })} /></Field>
-            <Field label="OAB"><Input value={form.oab} onChange={(e) => setForm({ ...form, oab: e.target.value })} /></Field>
+            <Field label="Nome da empresa"><Input value={form.officeName} onChange={(e) => setForm({ ...form, officeName: e.target.value })} /></Field>
+            <Field label="Responsável pelo jurídico"><Input value={form.lawyerName} onChange={(e) => setForm({ ...form, lawyerName: e.target.value })} /></Field>
+            <Field label="CNPJ / Registro"><Input value={form.oab} onChange={(e) => setForm({ ...form, oab: e.target.value })} /></Field>
             <Field label="UF"><Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} /></Field>
             <Field label="Alertar dias antes do vencimento">
               <Input type="number" value={form.alertDaysBefore} onChange={(e) => setForm({ ...form, alertDaysBefore: Number(e.target.value) })} />

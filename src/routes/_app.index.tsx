@@ -94,7 +94,7 @@ function Dashboard() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-gold font-medium">Painel</p>
-          <h1 className="font-display text-4xl mt-1">Visão geral do escritório</h1>
+          <h1 className="font-display text-4xl mt-1">Gestão dos contratos jurídicos</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </p>
