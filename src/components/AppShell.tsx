@@ -8,7 +8,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/contratos", label: "Contratos", icon: FileText },
-  { to: "/clientes", label: "Clientes", icon: Users },
+  { to: "/clientes", label: "Prestadores", icon: Users },
   { to: "/configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 
@@ -43,8 +43,8 @@ export const AppShell = () => {
               <Scale className="h-5 w-5 text-primary-foreground" />
             </div>
             <div className="min-w-0">
-              <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Escritório"}</p>
-              <p className="text-xs text-muted-foreground truncate">Gestão de Contratos</p>
+              <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
+              <p className="text-xs text-muted-foreground truncate">Contratos Jurídicos</p>
             </div>
           </div>
         </div>

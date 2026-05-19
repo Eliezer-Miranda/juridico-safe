@@ -54,15 +54,15 @@ function LoginPage() {
             <div className="h-12 w-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
               <Scale className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="font-display text-2xl">Aurum Jurídico</span>
+            <span className="font-display text-2xl">Aurum Contratos</span>
           </div>
           <div className="space-y-4 max-w-md">
             <h1 className="font-display text-5xl leading-tight">
-              Gestão de contratos<br />
-              <span className="text-gold">com a sobriedade que sua banca merece.</span>
+              Gestão dos seus contratos<br />
+              <span className="text-gold">com escritórios e advogados.</span>
             </h1>
             <p className="text-muted-foreground text-lg">
-              Cadastre contratos, controle parcelas, registre pagamentos e acompanhe a saúde financeira do escritório — tudo offline, no seu dispositivo.
+              Acompanhe vencimentos, parcelas, entradas e o que foi acordado em cada contrato — tudo offline, no seu dispositivo.
             </p>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -75,7 +75,7 @@ function LoginPage() {
         <form onSubmit={onSubmit} className="w-full max-w-sm animate-in-up">
           <div className="flex items-center gap-2 mb-6 lg:hidden">
             <Scale className="h-6 w-6 text-gold" />
-            <span className="font-display text-xl">Aurum Jurídico</span>
+            <span className="font-display text-xl">Aurum Contratos</span>
           </div>
           <h2 className="font-display text-3xl mb-1">
             {needsSetup ? "Defina sua senha" : "Bem-vindo de volta"}

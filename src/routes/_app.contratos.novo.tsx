@@ -166,18 +166,18 @@ function NewContract() {
         </Grid>
       </Section>
 
-      <Section title="Cliente">
+      <Section title="Prestador contratado (escritório/advogado)">
         <Grid cols={2}>
-          <Field label="Cliente existente">
+          <Field label="Prestador existente">
             <select {...register("client.existing")} className={inputCls}>
-              <option value="">— Novo cliente —</option>
+              <option value="">— Cadastrar novo prestador —</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name} · {c.document}</option>)}
             </select>
           </Field>
           <Field label="Tipo">
             <select {...register("client.type")} className={inputCls}>
-              <option value="PF">Pessoa Física</option>
-              <option value="PJ">Pessoa Jurídica</option>
+              <option value="PJ">Pessoa Jurídica (escritório)</option>
+              <option value="PF">Pessoa Física (advogado)</option>
             </select>
           </Field>
           <Field label="Nome / Razão social"><Input {...register("client.name")} /></Field>
@@ -195,7 +195,7 @@ function NewContract() {
         </Grid>
       </Section>
 
-      <Section title="Advogados responsáveis" action={
+      <Section title="Advogados responsáveis pelo caso" action={
         <Button type="button" variant="outline" size="sm" onClick={() => lawyers.append({ name: "", oab: "", uf: "SP", percentage: 0 })}>
           <Plus className="h-4 w-4 mr-1" /> Adicionar
         </Button>
