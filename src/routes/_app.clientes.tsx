@@ -13,6 +13,7 @@ export const Route = createFileRoute("/_app/clientes")({
 });
 
 function ClientsPage() {
+  const navigate = useNavigate();
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
   const contracts = useLiveQuery(() => db.contracts.toArray()) ?? [];
   const [q, setQ] = useState("");
@@ -34,10 +35,15 @@ function ClientsPage() {
 
   return (
     <div className="p-6 lg:p-10 space-y-6 animate-in-up">
-      <header>
-        <p className="text-xs uppercase tracking-widest text-gold font-medium">CRM</p>
-        <h1 className="font-display text-4xl mt-1">Clientes</h1>
-        <p className="text-sm text-muted-foreground mt-1">{enriched.length} {enriched.length === 1 ? "cliente" : "clientes"}</p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-gold font-medium">Cadastro</p>
+          <h1 className="font-display text-4xl mt-1">Prestadores jurídicos</h1>
+          <p className="text-sm text-muted-foreground mt-1">{enriched.length} {enriched.length === 1 ? "escritório/advogado" : "escritórios/advogados"}</p>
+        </div>
+        <Button onClick={() => navigate({ to: "/clientes/novo" })} className="bg-gradient-gold text-primary-foreground shadow-gold">
+          <Plus className="h-4 w-4 mr-2" /> Novo prestador
+        </Button>
       </header>
 
       <div className="relative max-w-md">
@@ -48,30 +54,35 @@ function ClientsPage() {
       {enriched.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-border rounded-lg">
           <Users className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">Nenhum cliente cadastrado.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Nenhum prestador cadastrado.</p>
+          <Button onClick={() => navigate({ to: "/clientes/novo" })} className="mt-4 bg-gradient-gold text-primary-foreground shadow-gold">
+            <Plus className="h-4 w-4 mr-2" /> Cadastrar primeiro prestador
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {enriched.map((c) => (
-            <Card key={c.id} className="bg-card border-border hover:border-gold transition p-5">
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-gold grid place-items-center text-primary-foreground font-display text-sm shrink-0">
-                  {c.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-display text-lg truncate">{c.name}</p>
-                  <p className="text-xs text-muted-foreground">{c.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {c.document}</p>
-                  <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-                    {c.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {c.email}</p>}
-                    {c.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {c.phone}</p>}
+            <Link key={c.id} to="/clientes/$id" params={{ id: String(c.id) }}>
+              <Card className="bg-card border-border hover:border-gold transition p-5 cursor-pointer h-full">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-gold grid place-items-center text-primary-foreground font-display text-sm shrink-0">
+                    {c.name.charAt(0).toUpperCase()}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{c.contractCount} contrato{c.contractCount !== 1 ? "s" : ""}</span>
-                    <span className="text-gold font-medium">{formatBRL(c.totalValue)}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-lg truncate">{c.name}</p>
+                    <p className="text-xs text-muted-foreground">{c.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {c.document}</p>
+                    <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                      {c.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {c.email}</p>}
+                      {c.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {c.phone}</p>}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{c.contractCount} contrato{c.contractCount !== 1 ? "s" : ""}</span>
+                      <span className="text-gold font-medium">{formatBRL(c.totalValue)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       )}
