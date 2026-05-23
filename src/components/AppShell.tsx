@@ -1,16 +1,24 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { getSettings } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { group: "Financeiro" },
+  { to: "/financeiro", label: "Visão geral", icon: Wallet, exact: true },
+  { to: "/financeiro/receber", label: "A receber", icon: ArrowDownToLine },
+  { to: "/financeiro/pagar", label: "A pagar", icon: ArrowUpFromLine },
+  { to: "/financeiro/contas", label: "Contas & Carteiras", icon: Landmark },
+  { to: "/financeiro/investimentos", label: "Investimentos", icon: LineChart },
+  { group: "Jurídico" },
   { to: "/contratos", label: "Contratos", icon: FileText },
   { to: "/clientes", label: "Prestadores", icon: Users },
+  { group: " " },
   { to: "/configuracoes", label: "Configurações", icon: SettingsIcon },
-];
+] as Array<any>;
 
 export const AppShell = () => {
   const { authed, ready, needsSetup, signOut } = useAuth();
@@ -44,13 +52,20 @@ export const AppShell = () => {
             </div>
             <div className="min-w-0">
               <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
-              <p className="text-xs text-muted-foreground truncate">Contratos Jurídicos</p>
+              <p className="text-xs text-muted-foreground truncate">Financeiro & Jurídico</p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {nav.map((item) => {
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {nav.map((item, idx) => {
+            if (item.group !== undefined) {
+              return (
+                <p key={`g-${idx}`} className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
+                  {item.group}
+                </p>
+              );
+            }
             const active = item.exact ? loc.pathname === item.to : loc.pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
