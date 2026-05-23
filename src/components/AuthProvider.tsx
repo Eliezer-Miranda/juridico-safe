@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useNavigate } from "@tanstack/react-router";
 import { hasPassword, isAuthenticated, login as doLogin, logout as doLogout, setPassword, verifyPassword } from "@/lib/auth";
 import { getSettings } from "@/lib/db";
-import { seedDemo } from "@/lib/seed";
+import { seedDemo, seedFinance } from "@/lib/seed";
 
 interface AuthCtx {
   ready: boolean;
@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       await getSettings();
       await seedDemo();
+      await seedFinance();
       const setup = !(await hasPassword());
       setNeedsSetup(setup);
       setAuthed(isAuthenticated());
