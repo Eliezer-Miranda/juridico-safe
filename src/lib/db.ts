@@ -128,11 +128,74 @@ export interface Settings {
   contractSequence: number; // last CTR number
 }
 
+export type AccountKind = "corrente" | "poupanca" | "carteira" | "cartao" | "investimento" | "outro";
+export interface Account {
+  id?: number;
+  name: string;
+  kind: AccountKind;
+  institution?: string;
+  openingBalance: number;
+  color?: string;
+  notes?: string;
+  archived?: boolean;
+  createdAt: string;
+}
+
+export type FinTxKind = "receber" | "pagar";
+export type FinTxStatus = "pendente" | "pago" | "atraso" | "cancelado";
+export interface FinTx {
+  id?: number;
+  kind: FinTxKind;
+  description: string;
+  category: string;
+  accountId?: number;
+  amount: number;
+  dueDate: string;
+  paidAt?: string;
+  paidAmount?: number;
+  paidAccountId?: number;
+  status: FinTxStatus;
+  recurrence?: "nenhuma" | "mensal" | "semanal" | "anual";
+  notes?: string;
+  createdAt: string;
+}
+
+export type InvestmentKind = "rendaFixa" | "acao" | "fii" | "cripto" | "fundo" | "tesouro" | "outro";
+export interface Investment {
+  id?: number;
+  name: string;
+  ticker?: string;
+  kind: InvestmentKind;
+  broker?: string;
+  quantity: number;
+  avgPrice: number;
+  currentPrice: number;
+  notes?: string;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export type InvMovKind = "aporte" | "resgate" | "rendimento" | "dividendo" | "ajuste";
+export interface InvMovement {
+  id?: number;
+  investmentId: number;
+  kind: InvMovKind;
+  date: string;
+  quantity?: number;
+  price?: number;
+  amount: number;
+  notes?: string;
+}
+
 class LegalDB extends Dexie {
   contracts!: Table<Contract, number>;
   installments!: Table<Installment, number>;
   clients!: Table<Client, number>;
   settings!: Table<Settings, number>;
+  accounts!: Table<Account, number>;
+  finTx!: Table<FinTx, number>;
+  investments!: Table<Investment, number>;
+  invMovements!: Table<InvMovement, number>;
 
   constructor() {
     super("legal-contracts-db");
@@ -141,6 +204,16 @@ class LegalDB extends Dexie {
       installments: "++id, contractId, status, dueDate",
       clients: "++id, document, name, type",
       settings: "id",
+    });
+    this.version(2).stores({
+      contracts: "++id, number, status, clientId, area, type, signedAt",
+      installments: "++id, contractId, status, dueDate",
+      clients: "++id, document, name, type",
+      settings: "id",
+      accounts: "++id, name, kind, archived",
+      finTx: "++id, kind, status, dueDate, accountId, category",
+      investments: "++id, name, kind, ticker",
+      invMovements: "++id, investmentId, date, kind",
     });
   }
 }
