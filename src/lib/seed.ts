@@ -129,3 +129,66 @@ export const seedDemo = async () => {
     });
   }
 };
+
+export const seedFinance = async () => {
+  if ((await db.accounts.count()) > 0) return;
+  const now = new Date().toISOString();
+  const today = new Date();
+  const isoDay = (offsetDays: number) => {
+    const d = new Date(today); d.setDate(d.getDate() + offsetDays); return d.toISOString().slice(0, 10);
+  };
+
+  const accCorrente = await db.accounts.add({
+    name: "Conta Corrente Itaú", kind: "corrente", institution: "Itaú",
+    openingBalance: 8500, color: "#C9A84C", createdAt: now,
+  });
+  const accNubank = await db.accounts.add({
+    name: "Nubank", kind: "corrente", institution: "Nu Pagamentos",
+    openingBalance: 2100, color: "#A78BFA", createdAt: now,
+  });
+  const accCarteira = await db.accounts.add({
+    name: "Carteira", kind: "carteira", openingBalance: 350, color: "#10B981", createdAt: now,
+  });
+  const accCartao = await db.accounts.add({
+    name: "Cartão Visa Infinite", kind: "cartao", institution: "Itaú",
+    openingBalance: 0, color: "#FF6B6B", createdAt: now,
+  });
+
+  const recurMensal = (description: string, amount: number, category: string, kind: "receber" | "pagar", paidMonths: number) => {
+    const items = [];
+    for (let i = -5; i <= 1; i++) {
+      const due = new Date(today.getFullYear(), today.getMonth() + i, 5).toISOString().slice(0, 10);
+      const isPast = i < 0;
+      const paid = i < paidMonths;
+      items.push({
+        kind, description, category, accountId: kind === "receber" ? accCorrente : accNubank,
+        amount, dueDate: due,
+        status: paid ? ("pago" as const) : (isPast ? ("atraso" as const) : ("pendente" as const)),
+        paidAt: paid ? due : undefined,
+        paidAmount: paid ? amount : undefined,
+        paidAccountId: paid ? (kind === "receber" ? accCorrente : accNubank) : undefined,
+        recurrence: "mensal" as const,
+        createdAt: now,
+      });
+    }
+    return items;
+  };
+
+  const txs = [
+    ...recurMensal("Salário Empresa XYZ", 9800, "Salário", "receber", 1),
+    ...recurMensal("Aluguel apartamento", 2400, "Moradia", "pagar", 1),
+    ...recurMensal("Internet + Streaming", 230, "Assinaturas", "pagar", 1),
+    ...recurMensal("Plano de saúde", 680, "Saúde", "pagar", 1),
+    { kind: "pagar" as const, description: "Mercado da semana", category: "Alimentação", accountId: accNubank, amount: 420, dueDate: isoDay(-2), status: "pago" as const, paidAt: isoDay(-2), paidAmount: 420, paidAccountId: accNubank, createdAt: now },
+    { kind: "pagar" as const, description: "Posto de gasolina", category: "Transporte", accountId: accCartao, amount: 280, dueDate: isoDay(3), status: "pendente" as const, createdAt: now },
+    { kind: "receber" as const, description: "Freelance design", category: "Freelance", accountId: accCorrente, amount: 1500, dueDate: isoDay(10), status: "pendente" as const, createdAt: now },
+  ];
+  await db.finTx.bulkAdd(txs);
+
+  await db.investments.bulkAdd([
+    { name: "Tesouro IPCA+ 2029", ticker: "IPCA29", kind: "tesouro", broker: "XP", quantity: 12, avgPrice: 3200, currentPrice: 3460, createdAt: now, updatedAt: now },
+    { name: "ITAÚ UNIBANCO PN", ticker: "ITUB4", kind: "acao", broker: "XP", quantity: 200, avgPrice: 28.5, currentPrice: 33.8, createdAt: now, updatedAt: now },
+    { name: "MXRF11", ticker: "MXRF11", kind: "fii", broker: "Rico", quantity: 300, avgPrice: 10.2, currentPrice: 9.85, createdAt: now, updatedAt: now },
+    { name: "Bitcoin", ticker: "BTC", kind: "cripto", broker: "Mercado Bitcoin", quantity: 0.05, avgPrice: 280000, currentPrice: 350000, createdAt: now, updatedAt: now },
+  ]);
+};
