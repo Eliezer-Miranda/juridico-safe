@@ -52,7 +52,7 @@ export const AppShell = () => {
             </div>
             <div className="min-w-0">
               <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
-              <p className="text-xs text-muted-foreground truncate">Contratos Jurídicos</p>
+              <p className="text-xs text-muted-foreground truncate">Financeiro & Jurídico</p>
             </div>
           </div>
         </div>
