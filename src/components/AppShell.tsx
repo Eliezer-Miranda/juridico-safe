@@ -57,8 +57,15 @@ export const AppShell = () => {
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {nav.map((item) => {
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {nav.map((item, idx) => {
+            if (item.group !== undefined) {
+              return (
+                <p key={`g-${idx}`} className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
+                  {item.group}
+                </p>
+              );
+            }
             const active = item.exact ? loc.pathname === item.to : loc.pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
