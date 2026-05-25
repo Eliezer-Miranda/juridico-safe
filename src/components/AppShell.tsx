@@ -93,10 +93,10 @@ export const AppShell = () => {
 
         <div className="p-3 border-t border-sidebar-border space-y-2">
           <Link
-            to="/contratos/novo"
+            to="/orcamentos/novo"
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm bg-gradient-gold text-primary-foreground font-medium shadow-gold hover:opacity-95 transition"
           >
-            <Plus className="h-4 w-4" /> Novo contrato
+            <Plus className="h-4 w-4" /> Novo orçamento
           </Link>
           <button
             onClick={signOut}
