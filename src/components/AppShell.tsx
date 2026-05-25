@@ -1,12 +1,15 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { getSettings } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { group: "Comercial" },
+  { to: "/clientes", label: "Clientes & Fornecedores", icon: Users },
+  { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
   { group: "Financeiro" },
   { to: "/financeiro", label: "Visão geral", icon: Wallet, exact: true },
   { to: "/financeiro/receber", label: "A receber", icon: ArrowDownToLine },
@@ -15,7 +18,6 @@ const nav = [
   { to: "/financeiro/investimentos", label: "Investimentos", icon: LineChart },
   { group: "Jurídico" },
   { to: "/contratos", label: "Contratos", icon: FileText },
-  { to: "/clientes", label: "Prestadores", icon: Users },
   { group: " " },
   { to: "/configuracoes", label: "Configurações", icon: SettingsIcon },
 ] as Array<any>;
