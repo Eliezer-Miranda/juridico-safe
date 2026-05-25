@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { db, nextQuoteNumber, getSettings, type Quote, type QuoteItem } from "@/lib/db";
 import { quoteSubtotal, quoteTotal } from "@/lib/quotes";
 import { formatBRL } from "@/lib/format";
@@ -43,9 +43,10 @@ function NewQuotePage() {
   const [notes, setNotes] = useState("");
 
   // initialize from settings once
-  useMemo(() => {
-    if (settings && !seller && settings.defaultSeller) setSeller(settings.defaultSeller);
-    if (settings?.quoteTerms && !notes) setNotes(settings.quoteTerms);
+  useEffect(() => {
+    if (!settings) return;
+    if (settings.defaultSeller) setSeller((s) => s || settings.defaultSeller!);
+    if (settings.quoteTerms) setNotes((s) => s || settings.quoteTerms!);
   }, [settings?.id]);
 
   const filteredParties = useMemo(() => clients.filter((c) => {
