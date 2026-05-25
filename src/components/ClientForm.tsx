@@ -38,11 +38,11 @@ export function ClientForm({ initial, onSaved }: Props) {
     const now = new Date().toISOString();
     if (initial?.id) {
       await db.clients.update(initial.id, { ...data, updatedAt: now });
-      toast.success("Prestador atualizado");
+      toast.success("Cadastro atualizado");
       onSaved(initial.id);
     } else {
       const id = await db.clients.add({ ...data, createdAt: now, updatedAt: now } as Client);
-      toast.success("Prestador cadastrado");
+      toast.success("Cadastro criado");
       onSaved(id as number);
     }
   };
