@@ -117,13 +117,13 @@ export function ClientForm({ initial, onSaved }: Props) {
       <Card className="bg-card border-border">
         <CardHeader><CardTitle className="font-display text-xl">Observações</CardTitle></CardHeader>
         <CardContent>
-          <Textarea rows={3} {...register("notes")} placeholder="Notas internas sobre o prestador…" />
+          <Textarea rows={3} {...register("notes")} placeholder="Notas internas…" />
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting} className="bg-gradient-gold text-primary-foreground shadow-gold">
-          <Save className="h-4 w-4 mr-2" /> {initial ? "Salvar alterações" : "Cadastrar prestador"}
+          <Save className="h-4 w-4 mr-2" /> {initial ? "Salvar alterações" : "Cadastrar"}
         </Button>
       </div>
     </form>
