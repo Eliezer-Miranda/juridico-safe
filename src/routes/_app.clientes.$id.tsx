@@ -23,9 +23,9 @@ function EditClient() {
 
   const remove = async () => {
     if (contracts.length > 0) return toast.error(`Não é possível excluir: existem ${contracts.length} contrato(s) vinculados.`);
-    if (!confirm(`Excluir o prestador "${client.name}"?`)) return;
+    if (!confirm(`Excluir o cadastro "${client.name}"?`)) return;
     await db.clients.delete(cid);
-    toast.success("Prestador excluído");
+    toast.success("Cadastro excluído");
     navigate({ to: "/clientes" });
   };
 
@@ -36,7 +36,7 @@ function EditClient() {
           <button onClick={() => navigate({ to: "/clientes" })} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
             <ArrowLeft className="h-4 w-4" /> Voltar
           </button>
-          <p className="text-xs uppercase tracking-widest text-gold font-medium mt-2">Editar prestador</p>
+          <p className="text-xs uppercase tracking-widest text-gold font-medium mt-2">Editar cadastro</p>
           <h1 className="font-display text-4xl mt-1">{client.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">{client.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {client.document}</p>
         </div>
