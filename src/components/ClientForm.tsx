@@ -21,6 +21,7 @@ export function ClientForm({ initial, onSaved }: Props) {
   const { register, handleSubmit, control, reset, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
       type: "PJ",
+      role: "cliente",
       name: "",
       document: "",
       address: {},
@@ -37,11 +38,11 @@ export function ClientForm({ initial, onSaved }: Props) {
     const now = new Date().toISOString();
     if (initial?.id) {
       await db.clients.update(initial.id, { ...data, updatedAt: now });
-      toast.success("Prestador atualizado");
+      toast.success("Cadastro atualizado");
       onSaved(initial.id);
     } else {
       const id = await db.clients.add({ ...data, createdAt: now, updatedAt: now } as Client);
-      toast.success("Prestador cadastrado");
+      toast.success("Cadastro criado");
       onSaved(id as number);
     }
   };
@@ -51,11 +52,18 @@ export function ClientForm({ initial, onSaved }: Props) {
       <Card className="bg-card border-border">
         <CardHeader><CardTitle className="font-display text-xl">Identificação</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <Grid cols={2}>
+          <Grid cols={3}>
+            <Field label="Relação">
+              <select {...register("role")} className={inputCls}>
+                <option value="cliente">Cliente</option>
+                <option value="fornecedor">Fornecedor</option>
+                <option value="ambos">Cliente e Fornecedor</option>
+              </select>
+            </Field>
             <Field label="Tipo">
               <select {...register("type")} className={inputCls}>
-                <option value="PJ">Pessoa Jurídica (escritório)</option>
-                <option value="PF">Pessoa Física (advogado autônomo)</option>
+                <option value="PJ">Pessoa Jurídica</option>
+                <option value="PF">Pessoa Física</option>
               </select>
             </Field>
             <Field label="Nome / Razão social">
@@ -109,13 +117,13 @@ export function ClientForm({ initial, onSaved }: Props) {
       <Card className="bg-card border-border">
         <CardHeader><CardTitle className="font-display text-xl">Observações</CardTitle></CardHeader>
         <CardContent>
-          <Textarea rows={3} {...register("notes")} placeholder="Notas internas sobre o prestador…" />
+          <Textarea rows={3} {...register("notes")} placeholder="Notas internas…" />
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting} className="bg-gradient-gold text-primary-foreground shadow-gold">
-          <Save className="h-4 w-4 mr-2" /> {initial ? "Salvar alterações" : "Cadastrar prestador"}
+          <Save className="h-4 w-4 mr-2" /> {initial ? "Salvar alterações" : "Cadastrar"}
         </Button>
       </div>
     </form>

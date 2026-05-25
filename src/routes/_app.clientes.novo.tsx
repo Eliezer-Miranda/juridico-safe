@@ -15,8 +15,8 @@ function NewClient() {
           <ArrowLeft className="h-4 w-4" /> Voltar
         </button>
         <p className="text-xs uppercase tracking-widest text-gold font-medium mt-2">Cadastro</p>
-        <h1 className="font-display text-4xl mt-1">Novo prestador</h1>
-        <p className="text-sm text-muted-foreground mt-1">Escritório de advocacia ou advogado autônomo contratado pela empresa.</p>
+        <h1 className="font-display text-4xl mt-1">Novo cadastro</h1>
+        <p className="text-sm text-muted-foreground mt-1">Cliente, fornecedor — ou ambos.</p>
       </header>
       <ClientForm onSaved={(id) => navigate({ to: "/clientes/$id", params: { id: String(id) } })} />
     </div>

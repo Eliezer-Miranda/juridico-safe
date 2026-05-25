@@ -6,9 +6,12 @@ export type LawArea = "civel" | "trabalhista" | "criminal" | "previdenciario" | 
 export type InstallmentStatus = "pendente" | "pago" | "atraso" | "cancelado" | "negociado";
 export type PaymentMethod = "pix" | "transferencia" | "boleto" | "dinheiro" | "cheque" | "cartao" | "outro";
 
+export type PartyRole = "cliente" | "fornecedor" | "ambos";
+
 export interface Client {
   id?: number;
   type: "PF" | "PJ";
+  role?: PartyRole;
   name: string;
   document: string; // CPF/CNPJ
   rgIe?: string;
@@ -42,10 +45,10 @@ export interface OpposingParty {
 export interface ContractDoc {
   id: string;
   name: string;
-  type: string; // "contrato" | "procuracao" | ...
+  type: string;
   mime: string;
   size: number;
-  dataUrl: string; // base64
+  dataUrl: string;
   uploadedAt: string;
 }
 
@@ -61,7 +64,7 @@ export interface Installment {
   dueDate: string;
   originalValue: number;
   correction: number;
-  penalty: number; // multa+juros aplicado
+  penalty: number;
   finalValue: number;
   status: InstallmentStatus;
   paidAt?: string;
@@ -74,25 +77,21 @@ export interface Installment {
 
 export interface Contract {
   id?: number;
-  number: string; // CTR-AAAA-NNNN
+  number: string;
   signedAt: string;
   startsAt: string;
   endsAt?: string;
   status: ContractStatus;
   type: ContractType;
-
   area: LawArea;
   objectDescription: string;
   processNumber?: string;
   court?: string;
   procedureStage?: string;
   tags: string[];
-
   clientId: number;
   opposing?: OpposingParty;
   lawyers: Lawyer[];
-
-  // Finance
   totalValue: number;
   downPayment: number;
   downPaymentDate?: string;
@@ -101,18 +100,21 @@ export interface Contract {
   dueDay: number;
   firstDueDate?: string;
   correctionIndex: "nenhum" | "igpm" | "ipca" | "inpc" | "selic" | "personalizado";
-  monthlyPenalty: number; // %
-  monthlyInterest: number; // %
-  earlyDiscount: number; // %
+  monthlyPenalty: number;
+  monthlyInterest: number;
+  earlyDiscount: number;
   successPercentage?: number;
   successBase?: string;
-
   documents: ContractDoc[];
   notes?: string;
   history: HistoryEntry[];
-
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CompanyAddress {
+  street?: string; number?: string; complement?: string;
+  neighborhood?: string; city?: string; state?: string; zip?: string;
 }
 
 export interface Settings {
@@ -125,7 +127,18 @@ export interface Settings {
   alertDaysBefore: number;
   theme: "dark" | "light";
   passwordHash?: string;
-  contractSequence: number; // last CTR number
+  contractSequence: number;
+  // Company profile
+  companyDocument?: string; // CNPJ
+  companyIE?: string;
+  companyEmail?: string;
+  companyPhone?: string;
+  companyWebsite?: string;
+  companyAddress?: CompanyAddress;
+  companyTagline?: string;
+  defaultSeller?: string;
+  quoteSequence?: number;
+  quoteTerms?: string;
 }
 
 export type AccountKind = "corrente" | "poupanca" | "carteira" | "cartao" | "investimento" | "outro";
@@ -156,6 +169,9 @@ export interface FinTx {
   paidAccountId?: number;
   status: FinTxStatus;
   recurrence?: "nenhuma" | "mensal" | "semanal" | "anual";
+  partyId?: number; // cliente/fornecedor vinculado
+  quoteId?: number;
+  installmentInfo?: string; // "2/6"
   notes?: string;
   createdAt: string;
 }
@@ -187,6 +203,34 @@ export interface InvMovement {
   notes?: string;
 }
 
+export type QuoteStatus = "rascunho" | "enviado" | "aprovado" | "recusado" | "expirado" | "faturado";
+export interface QuoteItem {
+  description: string;
+  quantity: number;
+  unit?: string;
+  unitPrice: number;
+}
+export interface Quote {
+  id?: number;
+  number: string; // S00001
+  partyId: number;
+  partyKind: "cliente" | "fornecedor";
+  issueDate: string;
+  expiryDate: string;
+  seller?: string;
+  items: QuoteItem[];
+  discount: number;
+  total: number;
+  notes?: string;
+  status: QuoteStatus;
+  paymentMode: "avista" | "parcelado";
+  installmentsCount: number;
+  firstDueDate?: string;
+  linkedTxIds?: number[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 class LegalDB extends Dexie {
   contracts!: Table<Contract, number>;
   installments!: Table<Installment, number>;
@@ -196,6 +240,7 @@ class LegalDB extends Dexie {
   finTx!: Table<FinTx, number>;
   investments!: Table<Investment, number>;
   invMovements!: Table<InvMovement, number>;
+  quotes!: Table<Quote, number>;
 
   constructor() {
     super("legal-contracts-db");
@@ -215,6 +260,21 @@ class LegalDB extends Dexie {
       investments: "++id, name, kind, ticker",
       invMovements: "++id, investmentId, date, kind",
     });
+    this.version(3).stores({
+      contracts: "++id, number, status, clientId, area, type, signedAt",
+      installments: "++id, contractId, status, dueDate",
+      clients: "++id, document, name, type, role",
+      settings: "id",
+      accounts: "++id, name, kind, archived",
+      finTx: "++id, kind, status, dueDate, accountId, category, partyId, quoteId",
+      investments: "++id, name, kind, ticker",
+      invMovements: "++id, investmentId, date, kind",
+      quotes: "++id, number, status, partyId, partyKind, issueDate",
+    }).upgrade(async (tx) => {
+      await tx.table("clients").toCollection().modify((c: Client) => {
+        if (!c.role) c.role = "cliente";
+      });
+    });
   }
 }
 
@@ -225,15 +285,20 @@ export const getSettings = async (): Promise<Settings> => {
   if (!s) {
     s = {
       id: 1,
-      officeName: "Meu Escritório",
+      officeName: "Minha Empresa",
       lawyerName: "",
       oab: "",
       uf: "SP",
       alertDaysBefore: 7,
       theme: "dark",
       contractSequence: 0,
+      quoteSequence: 0,
     };
     await db.settings.put(s);
+  }
+  if (s.quoteSequence == null) {
+    await db.settings.update(1, { quoteSequence: 0 });
+    s.quoteSequence = 0;
   }
   return s;
 };
@@ -244,4 +309,11 @@ export const nextContractNumber = async (): Promise<string> => {
   const next = (s.contractSequence ?? 0) + 1;
   await db.settings.update(1, { contractSequence: next });
   return `CTR-${year}-${String(next).padStart(4, "0")}`;
+};
+
+export const nextQuoteNumber = async (): Promise<string> => {
+  const s = await getSettings();
+  const next = (s.quoteSequence ?? 0) + 1;
+  await db.settings.update(1, { quoteSequence: next });
+  return `S${String(next).padStart(5, "0")}`;
 };

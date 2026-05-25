@@ -1,12 +1,15 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { getSettings } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { group: "Comercial" },
+  { to: "/clientes", label: "Clientes & Fornecedores", icon: Users },
+  { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
   { group: "Financeiro" },
   { to: "/financeiro", label: "Visão geral", icon: Wallet, exact: true },
   { to: "/financeiro/receber", label: "A receber", icon: ArrowDownToLine },
@@ -15,7 +18,6 @@ const nav = [
   { to: "/financeiro/investimentos", label: "Investimentos", icon: LineChart },
   { group: "Jurídico" },
   { to: "/contratos", label: "Contratos", icon: FileText },
-  { to: "/clientes", label: "Prestadores", icon: Users },
   { group: " " },
   { to: "/configuracoes", label: "Configurações", icon: SettingsIcon },
 ] as Array<any>;
@@ -47,12 +49,16 @@ export const AppShell = () => {
       <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col">
         <div className="px-6 py-7 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-gold grid place-items-center shadow-gold">
-              <Scale className="h-5 w-5 text-primary-foreground" />
-            </div>
+            {settings?.logoDataUrl ? (
+              <img src={settings.logoDataUrl} alt="Logo" className="h-10 w-10 rounded-lg object-cover shadow-gold" />
+            ) : (
+              <div className="h-10 w-10 rounded-lg bg-gradient-gold grid place-items-center shadow-gold">
+                <Scale className="h-5 w-5 text-primary-foreground" />
+              </div>
+            )}
             <div className="min-w-0">
               <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
-              <p className="text-xs text-muted-foreground truncate">Financeiro & Jurídico</p>
+              <p className="text-xs text-muted-foreground truncate">{settings?.companyTagline ?? "Gestão financeira & contratos"}</p>
             </div>
           </div>
         </div>
@@ -87,10 +93,10 @@ export const AppShell = () => {
 
         <div className="p-3 border-t border-sidebar-border space-y-2">
           <Link
-            to="/contratos/novo"
+            to="/orcamentos/novo"
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm bg-gradient-gold text-primary-foreground font-medium shadow-gold hover:opacity-95 transition"
           >
-            <Plus className="h-4 w-4" /> Novo contrato
+            <Plus className="h-4 w-4" /> Novo orçamento
           </Link>
           <button
             onClick={signOut}
