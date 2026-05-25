@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useEffect, useRef, useState } from "react";
-import { db, getSettings } from "@/lib/db";
+import { db, getSettings, type Settings } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { setPassword } from "@/lib/auth";
-import { Download, Upload, Save, Building2, KeyRound, ShieldAlert } from "lucide-react";
+import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
+import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/configuracoes")({
@@ -17,22 +19,40 @@ export const Route = createFileRoute("/_app/configuracoes")({
 function SettingsPage() {
   const settings = useLiveQuery(() => getSettings());
   const fileRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState({ officeName: "", lawyerName: "", oab: "", uf: "", alertDaysBefore: 7 });
+  const [form, setForm] = useState<Partial<Settings>>({});
   const [newPwd, setNewPwd] = useState("");
 
   useEffect(() => {
-    if (settings) {
-      setForm({
-        officeName: settings.officeName, lawyerName: settings.lawyerName,
-        oab: settings.oab, uf: settings.uf, alertDaysBefore: settings.alertDaysBefore,
-      });
-    }
+    if (settings) setForm(settings);
   }, [settings?.id]);
 
-  const saveOffice = async () => {
+  const update = (patch: Partial<Settings>) => setForm((s) => ({ ...s, ...patch }));
+  const updateAddr = (patch: Partial<NonNullable<Settings["companyAddress"]>>) =>
+    setForm((s) => ({ ...s, companyAddress: { ...(s.companyAddress ?? {}), ...patch } }));
+
+  const saveCompany = async () => {
     await db.settings.update(1, form);
     toast.success("Dados da empresa atualizados");
+  };
+
+  const uploadLogo = async (f: File) => {
+    if (f.size > 2 * 1024 * 1024) return toast.error("Logo deve ter no máximo 2MB.");
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = String(reader.result);
+      update({ logoDataUrl: dataUrl });
+      await db.settings.update(1, { logoDataUrl: dataUrl });
+      toast.success("Logo atualizada");
+    };
+    reader.readAsDataURL(f);
+  };
+
+  const removeLogo = async () => {
+    update({ logoDataUrl: undefined });
+    await db.settings.update(1, { logoDataUrl: undefined });
+    toast.success("Logo removida");
   };
 
   const changePwd = async () => {
@@ -44,18 +64,23 @@ function SettingsPage() {
 
   const exportBackup = async () => {
     const data = {
-      version: 1,
+      version: 3,
       exportedAt: new Date().toISOString(),
       contracts: await db.contracts.toArray(),
       installments: await db.installments.toArray(),
       clients: await db.clients.toArray(),
       settings: await db.settings.toArray(),
+      accounts: await db.accounts.toArray(),
+      finTx: await db.finTx.toArray(),
+      investments: await db.investments.toArray(),
+      invMovements: await db.invMovements.toArray(),
+      quotes: await db.quotes.toArray(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `backup-juridico-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Backup exportado");
@@ -65,46 +90,107 @@ function SettingsPage() {
     if (!confirm("Importar substituirá os dados atuais. Continuar?")) return;
     const text = await file.text();
     const data = JSON.parse(text);
-    await db.transaction("rw", db.contracts, db.installments, db.clients, db.settings, async () => {
-      await db.contracts.clear(); await db.installments.clear(); await db.clients.clear(); await db.settings.clear();
-      if (data.contracts) await db.contracts.bulkAdd(data.contracts);
-      if (data.installments) await db.installments.bulkAdd(data.installments);
-      if (data.clients) await db.clients.bulkAdd(data.clients);
-      if (data.settings) await db.settings.bulkAdd(data.settings);
+    await db.transaction("rw", db.tables, async () => {
+      for (const t of db.tables) await t.clear();
+      const tables: [string, any[]][] = [
+        ["contracts", data.contracts], ["installments", data.installments],
+        ["clients", data.clients], ["settings", data.settings],
+        ["accounts", data.accounts], ["finTx", data.finTx],
+        ["investments", data.investments], ["invMovements", data.invMovements],
+        ["quotes", data.quotes],
+      ];
+      for (const [name, rows] of tables) if (rows?.length) await (db as any)[name].bulkAdd(rows);
     });
     toast.success("Backup restaurado");
   };
 
   const clearAll = async () => {
     if (!confirm("APAGAR TODOS os dados do sistema? Esta ação é irreversível.")) return;
-    await db.transaction("rw", db.contracts, db.installments, db.clients, async () => {
-      await db.contracts.clear(); await db.installments.clear(); await db.clients.clear();
+    await db.transaction("rw", db.tables, async () => {
+      for (const t of db.tables) if (t.name !== "settings") await t.clear();
     });
-    await db.settings.update(1, { contractSequence: 0 });
+    await db.settings.update(1, { contractSequence: 0, quoteSequence: 0 });
     toast.success("Dados apagados");
   };
 
   return (
-    <div className="p-6 lg:p-10 space-y-6 max-w-4xl mx-auto animate-in-up">
+    <div className="p-6 lg:p-10 space-y-6 max-w-5xl mx-auto animate-in-up">
       <header>
         <p className="text-xs uppercase tracking-widest text-gold font-medium">Sistema</p>
         <h1 className="font-display text-4xl mt-1">Configurações</h1>
       </header>
 
       <Card className="bg-card border-border">
-        <CardHeader><CardTitle className="font-display flex items-center gap-2"><Building2 className="h-4 w-4 text-gold" /> Empresa contratante</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-gold" /> Identidade da empresa
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-5">
+            <div className="h-24 w-24 rounded-xl border border-border bg-muted/40 grid place-items-center overflow-hidden">
+              {form.logoDataUrl ? (
+                <img src={form.logoDataUrl} alt="Logo" className="h-full w-full object-cover" />
+              ) : (
+                <ImageIcon className="h-8 w-8 text-muted-foreground" />
+              )}
+            </div>
+            <div className="space-y-2">
+              <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                const f = e.target.files?.[0]; if (f) uploadLogo(f);
+              }} />
+              <Button variant="outline" onClick={() => logoRef.current?.click()}>
+                <Upload className="h-4 w-4 mr-2" /> Enviar logo
+              </Button>
+              {form.logoDataUrl && (
+                <Button variant="ghost" onClick={removeLogo} className="text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" /> Remover
+                </Button>
+              )}
+              <p className="text-xs text-muted-foreground">PNG ou JPG, até 2MB. Aparece no menu lateral e nos orçamentos.</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Nome da empresa"><Input value={form.officeName} onChange={(e) => setForm({ ...form, officeName: e.target.value })} /></Field>
-            <Field label="Responsável pelo jurídico"><Input value={form.lawyerName} onChange={(e) => setForm({ ...form, lawyerName: e.target.value })} /></Field>
-            <Field label="CNPJ / Registro"><Input value={form.oab} onChange={(e) => setForm({ ...form, oab: e.target.value })} /></Field>
-            <Field label="UF"><Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} /></Field>
-            <Field label="Alertar dias antes do vencimento">
-              <Input type="number" value={form.alertDaysBefore} onChange={(e) => setForm({ ...form, alertDaysBefore: Number(e.target.value) })} />
+            <Field label="Razão social"><Input value={form.officeName ?? ""} onChange={(e) => update({ officeName: e.target.value })} /></Field>
+            <Field label="Slogan / Atividade"><Input value={form.companyTagline ?? ""} onChange={(e) => update({ companyTagline: e.target.value })} placeholder="Ex: Segurança eletrônica com inteligência" /></Field>
+            <Field label="CNPJ"><Input value={form.companyDocument ?? ""} onChange={(e) => update({ companyDocument: maskCPFCNPJ(e.target.value) })} /></Field>
+            <Field label="Inscrição Estadual"><Input value={form.companyIE ?? ""} onChange={(e) => update({ companyIE: e.target.value })} /></Field>
+            <Field label="E-mail"><Input type="email" value={form.companyEmail ?? ""} onChange={(e) => update({ companyEmail: e.target.value })} /></Field>
+            <Field label="Telefone"><Input value={form.companyPhone ?? ""} onChange={(e) => update({ companyPhone: maskPhone(e.target.value) })} /></Field>
+            <Field label="Site"><Input value={form.companyWebsite ?? ""} onChange={(e) => update({ companyWebsite: e.target.value })} placeholder="https://" /></Field>
+            <Field label="Vendedor padrão"><Input value={form.defaultSeller ?? ""} onChange={(e) => update({ defaultSeller: e.target.value })} placeholder="Nome que aparece nos orçamentos" /></Field>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Endereço</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Field label="CEP"><Input value={form.companyAddress?.zip ?? ""} onChange={(e) => updateAddr({ zip: maskCEP(e.target.value) })} /></Field>
+              <Field label="Logradouro"><Input value={form.companyAddress?.street ?? ""} onChange={(e) => updateAddr({ street: e.target.value })} /></Field>
+              <Field label="Número"><Input value={form.companyAddress?.number ?? ""} onChange={(e) => updateAddr({ number: e.target.value })} /></Field>
+              <Field label="Complemento"><Input value={form.companyAddress?.complement ?? ""} onChange={(e) => updateAddr({ complement: e.target.value })} /></Field>
+              <Field label="Bairro"><Input value={form.companyAddress?.neighborhood ?? ""} onChange={(e) => updateAddr({ neighborhood: e.target.value })} /></Field>
+              <Field label="Cidade"><Input value={form.companyAddress?.city ?? ""} onChange={(e) => updateAddr({ city: e.target.value })} /></Field>
+              <Field label="UF"><Input maxLength={2} value={form.companyAddress?.state ?? ""} onChange={(e) => updateAddr({ state: e.target.value.toUpperCase() })} /></Field>
+            </div>
+          </div>
+
+          <div>
+            <Field label="Termos padrão para orçamentos">
+              <Textarea rows={3} value={form.quoteTerms ?? ""} onChange={(e) => update({ quoteTerms: e.target.value })}
+                placeholder="Ex: Validade da proposta: 30 dias. Pagamento via PIX, boleto ou transferência." />
             </Field>
           </div>
-          <Button onClick={saveOffice} className="bg-gradient-gold text-primary-foreground shadow-gold">
-            <Save className="h-4 w-4 mr-2" /> Salvar
+
+          <div>
+            <Field label="Alertar dias antes do vencimento">
+              <Input className="max-w-[180px]" type="number" value={form.alertDaysBefore ?? 7}
+                onChange={(e) => update({ alertDaysBefore: Number(e.target.value) })} />
+            </Field>
+          </div>
+
+          <Button onClick={saveCompany} className="bg-gradient-gold text-primary-foreground shadow-gold">
+            <Save className="h-4 w-4 mr-2" /> Salvar configurações
           </Button>
         </CardContent>
       </Card>
