@@ -21,6 +21,7 @@ export function ClientForm({ initial, onSaved }: Props) {
   const { register, handleSubmit, control, reset, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
       type: "PJ",
+      role: "cliente",
       name: "",
       document: "",
       address: {},
