@@ -49,12 +49,16 @@ export const AppShell = () => {
       <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col">
         <div className="px-6 py-7 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-gold grid place-items-center shadow-gold">
-              <Scale className="h-5 w-5 text-primary-foreground" />
-            </div>
+            {settings?.logoDataUrl ? (
+              <img src={settings.logoDataUrl} alt="Logo" className="h-10 w-10 rounded-lg object-cover shadow-gold" />
+            ) : (
+              <div className="h-10 w-10 rounded-lg bg-gradient-gold grid place-items-center shadow-gold">
+                <Scale className="h-5 w-5 text-primary-foreground" />
+              </div>
+            )}
             <div className="min-w-0">
               <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
-              <p className="text-xs text-muted-foreground truncate">Financeiro & Jurídico</p>
+              <p className="text-xs text-muted-foreground truncate">{settings?.companyTagline ?? "Gestão financeira & contratos"}</p>
             </div>
           </div>
         </div>
