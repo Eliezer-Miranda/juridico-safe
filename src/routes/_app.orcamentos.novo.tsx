@@ -30,7 +30,7 @@ function NewQuotePage() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/_app/orcamentos/novo" });
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
-  const products = useLiveQuery(() => db.products.where({ active: 1 as any }).toArray().catch(() => db.products.toArray())) ?? [];
+  const products = useLiveQuery(() => db.products.orderBy("name").toArray()) ?? [];
   const conditions = useLiveQuery(() => db.paymentConditions.toArray()) ?? [];
   const settings = useLiveQuery(() => getSettings());
   const project = useLiveQuery(async () => search.projectId ? await db.projects.get(search.projectId) : null, [search.projectId]);
