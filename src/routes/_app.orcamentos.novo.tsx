@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useEffect, useMemo, useState } from "react";
-import { db, nextQuoteNumber, getSettings, type Quote, type QuoteItem } from "@/lib/db";
+import { db, nextQuoteNumber, getSettings, type Quote, type QuoteItem, type PaymentCondition } from "@/lib/db";
 import { quoteSubtotal, quoteTotal } from "@/lib/quotes";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,9 @@ import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/orcamentos/novo")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    projectId: s.projectId ? Number(s.projectId) : undefined,
+  }),
   component: NewQuotePage,
 });
 
@@ -25,8 +28,12 @@ const addDays = (iso: string, n: number) => {
 
 function NewQuotePage() {
   const navigate = useNavigate();
+  const search = useSearch({ from: "/_app/orcamentos/novo" });
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
+  const products = useLiveQuery(() => db.products.orderBy("name").toArray()) ?? [];
+  const conditions = useLiveQuery(() => db.paymentConditions.toArray()) ?? [];
   const settings = useLiveQuery(() => getSettings());
+  const project = useLiveQuery(async () => search.projectId ? await db.projects.get(search.projectId) : null, [search.projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">("cliente");
   const [partyId, setPartyId] = useState<number | "">("");
@@ -37,17 +44,31 @@ function NewQuotePage() {
     { description: "", quantity: 1, unit: "Un", unitPrice: 0 },
   ]);
   const [discount, setDiscount] = useState(0);
+  const [conditionId, setConditionId] = useState<number | "">("");
   const [paymentMode, setPaymentMode] = useState<"avista" | "parcelado">("avista");
   const [installmentsCount, setInstallmentsCount] = useState(1);
   const [firstDueDate, setFirstDueDate] = useState(addDays(todayISO(), 30));
   const [notes, setNotes] = useState("");
 
-  // initialize from settings once
   useEffect(() => {
     if (!settings) return;
     if (settings.defaultSeller) setSeller((s) => s || settings.defaultSeller!);
     if (settings.quoteTerms) setNotes((s) => s || settings.quoteTerms!);
   }, [settings?.id]);
+
+  useEffect(() => {
+    if (project) setPartyId(project.clientId);
+  }, [project?.id]);
+
+  const applyCondition = (id: number) => {
+    setConditionId(id);
+    const c = conditions.find((x) => x.id === id);
+    if (!c) return;
+    if (c.installments <= 1) setPaymentMode("avista");
+    else { setPaymentMode("parcelado"); setInstallmentsCount(c.installments); }
+    setFirstDueDate(addDays(issueDate, c.intervalDays || 30));
+    if (c.description) setNotes((n) => n || `Condição: ${c.name}${c.description ? " — " + c.description : ""}`);
+  };
 
   const filteredParties = useMemo(() => clients.filter((c) => {
     const r = c.role ?? "cliente";
@@ -65,6 +86,14 @@ function NewQuotePage() {
   const removeItem = (idx: number) =>
     setItems(items.filter((_, i) => i !== idx));
 
+  const pickProduct = (idx: number, productId: number) => {
+    const p = products.find((x) => x.id === productId);
+    if (!p) return;
+    setItem(idx, {
+      productId: p.id, description: p.name, unit: p.unit, unitPrice: p.price,
+    });
+  };
+
   const save = async (status: "rascunho" | "enviado" = "rascunho") => {
     if (!partyId) return toast.error(partyKind === "cliente" ? "Selecione o cliente" : "Selecione o fornecedor");
     if (items.length === 0 || items.every((i) => !i.description.trim())) return toast.error("Adicione ao menos um item");
@@ -75,10 +104,11 @@ function NewQuotePage() {
       number, partyId: Number(partyId), partyKind, issueDate, expiryDate, seller,
       items: cleanItems, discount: Number(discount) || 0,
       total: quoteTotal({ items: cleanItems, discount: Number(discount) || 0 }),
-      notes, status,
-      paymentMode,
+      notes, status, paymentMode,
       installmentsCount: paymentMode === "avista" ? 1 : Math.max(1, installmentsCount),
       firstDueDate,
+      paymentConditionId: conditionId ? Number(conditionId) : undefined,
+      projectId: search.projectId,
       createdAt: now, updatedAt: now,
     };
     const id = await db.quotes.add(quote);
@@ -94,6 +124,11 @@ function NewQuotePage() {
         </button>
         <p className="text-xs uppercase tracking-widest text-gold font-medium mt-2">Novo</p>
         <h1 className="font-display text-4xl mt-1">Gerar orçamento</h1>
+        {project && (
+          <p className="text-sm text-muted-foreground mt-1">
+            Vinculado ao projeto <span className="text-gold font-mono">{project.code}</span> — {project.name}
+          </p>
+        )}
       </header>
 
       <Card className="bg-card border-border">
@@ -109,12 +144,17 @@ function NewQuotePage() {
                 </SelectContent>
               </Select>
             </Field>
-            <Field label={partyKind === "cliente" ? "Cliente" : "Fornecedor"}>
+            <Field label={
+              <span className="flex items-center justify-between">
+                <span>{partyKind === "cliente" ? "Cliente" : "Fornecedor"}</span>
+                <Link to="/clientes/novo" className="text-[10px] text-gold hover:underline normal-case tracking-normal">+ Novo cadastro</Link>
+              </span>
+            }>
               <Select value={partyId ? String(partyId) : ""} onValueChange={(v) => setPartyId(Number(v))}>
                 <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
                 <SelectContent>
                   {filteredParties.length === 0 && (
-                    <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhum cadastro. Vá em Clientes &amp; Fornecedores.</div>
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhum cadastro encontrado.</div>
                   )}
                   {filteredParties.map((c) => (
                     <SelectItem key={c.id} value={String(c.id)}>{c.name} · {c.document}</SelectItem>
@@ -132,20 +172,31 @@ function NewQuotePage() {
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-display text-xl">Itens</CardTitle>
-          <Button size="sm" variant="outline" onClick={addItem}><Plus className="h-3.5 w-3.5 mr-1" /> Adicionar item</Button>
+          <div className="flex items-center gap-2">
+            <Link to="/cadastros/produtos" className="text-xs text-gold hover:underline">Gerenciar produtos</Link>
+            <Button size="sm" variant="outline" onClick={addItem}><Plus className="h-3.5 w-3.5 mr-1" /> Adicionar item</Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {items.map((it, idx) => (
             <div key={idx} className="grid grid-cols-12 gap-2 items-end border-b border-border/50 pb-3">
-              <div className="col-span-12 md:col-span-6">
+              <div className="col-span-12 md:col-span-3">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Produto (opcional)</Label>
+                <Select value={it.productId ? String(it.productId) : ""} onValueChange={(v) => pickProduct(idx, Number(v))}>
+                  <SelectTrigger><SelectValue placeholder="Buscar cadastro…" /></SelectTrigger>
+                  <SelectContent>
+                    {products.length === 0 && <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhum produto. Cadastre em Produtos &amp; Serviços.</div>}
+                    {products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}{p.sku ? ` (${p.sku})` : ""}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-12 md:col-span-3">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Descrição</Label>
-                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value })}
-                  placeholder="Ex: Câmera IP POE 4MP" />
+                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value })} placeholder="Descrição do item" />
               </div>
               <div className="col-span-3 md:col-span-1">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Qtd</Label>
-                <Input type="number" step="0.01" value={it.quantity}
-                  onChange={(e) => setItem(idx, { quantity: Number(e.target.value) })} />
+                <Input type="number" step="0.01" value={it.quantity} onChange={(e) => setItem(idx, { quantity: Number(e.target.value) })} />
               </div>
               <div className="col-span-3 md:col-span-1">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Un</Label>
@@ -153,8 +204,7 @@ function NewQuotePage() {
               </div>
               <div className="col-span-3 md:col-span-2">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Valor unit. (R$)</Label>
-                <Input type="number" step="0.01" value={it.unitPrice}
-                  onChange={(e) => setItem(idx, { unitPrice: Number(e.target.value) })} />
+                <Input type="number" step="0.01" value={it.unitPrice} onChange={(e) => setItem(idx, { unitPrice: Number(e.target.value) })} />
               </div>
               <div className="col-span-2 md:col-span-1 text-right text-sm font-medium pt-5">
                 {formatBRL((it.quantity || 0) * (it.unitPrice || 0))}
@@ -171,8 +221,7 @@ function NewQuotePage() {
             <div className="flex gap-8"><span className="text-muted-foreground">Subtotal</span><span className="font-medium w-32 text-right">{formatBRL(subtotal)}</span></div>
             <div className="flex gap-8 items-center">
               <span className="text-muted-foreground">Desconto (R$)</span>
-              <Input type="number" step="0.01" value={discount} onChange={(e) => setDiscount(Number(e.target.value))}
-                className="w-32 text-right" />
+              <Input type="number" step="0.01" value={discount} onChange={(e) => setDiscount(Number(e.target.value))} className="w-32 text-right" />
             </div>
             <div className="flex gap-8 text-lg pt-2 border-t border-border w-full md:w-auto">
               <span className="text-gold font-display">Total</span>
@@ -183,9 +232,21 @@ function NewQuotePage() {
       </Card>
 
       <Card className="bg-card border-border">
-        <CardHeader><CardTitle className="font-display text-xl">Faturamento</CardTitle></CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="font-display text-xl">Faturamento</CardTitle>
+          <Link to="/cadastros/condicoes" className="text-xs text-gold hover:underline">Gerenciar condições</Link>
+        </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Field label="Condição cadastrada">
+              <Select value={conditionId ? String(conditionId) : ""} onValueChange={(v) => applyCondition(Number(v))}>
+                <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+                <SelectContent>
+                  {conditions.length === 0 && <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhuma condição cadastrada.</div>}
+                  {conditions.map((c: PaymentCondition) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="Forma de pagamento">
               <Select value={paymentMode} onValueChange={(v) => setPaymentMode(v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -220,7 +281,7 @@ function NewQuotePage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>

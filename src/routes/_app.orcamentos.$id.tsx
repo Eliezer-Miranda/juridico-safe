@@ -109,7 +109,7 @@ function QuoteView() {
         <div className="flex items-start justify-between gap-6 border-b border-border pb-5 print:border-gray-300">
           <div className="flex items-start gap-4">
             {settings?.logoDataUrl ? (
-              <img src={settings.logoDataUrl} alt="Logo" className="h-16 w-16 rounded object-cover" />
+              <img src={settings.logoDataUrl} alt="Logo" className="h-24 w-24 rounded object-contain print:h-28 print:w-28" />
             ) : null}
             <div>
               <p className="font-display text-2xl">{settings?.officeName ?? "Sua Empresa"}</p>
