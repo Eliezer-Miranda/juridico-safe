@@ -188,5 +188,22 @@
   aside, nav, header.print\:hidden, .print\:hidden { display: none !important; }
   main { overflow: visible !important; }
   #quote-print { box-shadow: none !important; }
+  #quote-print table,
+  #quote-print thead,
+  #quote-print tbody,
+  #quote-print tfoot,
+  #quote-print tr,
+  #quote-print th,
+  #quote-print td {
+    border: 0 !important;
+    background: transparent !important;
+  }
+  #quote-print thead th {
+    border-bottom: 1px solid #999 !important;
+  }
+  #quote-print tfoot tr:last-child td {
+    border-top: 1px solid #999 !important;
+    font-weight: 600;
+  }
   @page { margin: 1.5cm; }
 }
