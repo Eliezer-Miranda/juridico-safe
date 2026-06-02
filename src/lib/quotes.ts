@@ -54,6 +54,7 @@ export const generateFinTxFromQuote = async (
       recurrence: "nenhuma",
       partyId: quote.partyId,
       quoteId: quote.id,
+      projectId: quote.projectId,
       installmentInfo: `${i + 1}/${n}`,
       notes: `Gerado do orçamento ${quote.number}`,
       createdAt: now,
