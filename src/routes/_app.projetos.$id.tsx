@@ -198,7 +198,14 @@ function ProjectDetail() {
                     <span className="text-muted-foreground">{formatDate(q.issueDate)}</span>
                     {q.status === "faturado" && <span className="ml-2 text-[10px] uppercase tracking-wider text-gold border border-gold/40 rounded px-1.5 py-0.5"><FileCheck2 className="h-3 w-3 inline" /> Faturado</span>}
                   </Link>
-                  <span className="font-medium">{formatBRL(q.total)}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">{formatBRL(q.total)}</span>
+                    {q.partyKind === "cliente" && !q.linkedTxIds?.length && (
+                      <Button size="sm" onClick={() => acceptQuote(q.id!)} className="bg-gradient-gold text-primary-foreground h-7 px-2 text-xs">
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Aceitar e gerar A Receber
+                      </Button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
