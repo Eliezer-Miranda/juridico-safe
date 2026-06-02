@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine, CheckCircle2 } from "lucide-react";
 import { formatBRL, formatDate } from "@/lib/format";
-import { generateFinTxFromQuote } from "@/lib/quotes";
+import { generateFinTxFromQuote, buildQuoteSchedule } from "@/lib/quotes";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/projetos/$id")({
@@ -120,12 +120,16 @@ function ProjectDetail() {
     if (!q) return;
     if (q.partyKind !== "cliente") return toast.error("Apenas orçamentos de cliente geram A Receber.");
     if (q.linkedTxIds?.length) return toast.error("Orçamento já faturado.");
-    if (!confirm(`Confirmar aceitação do orçamento ${q.number} e gerar ${q.installmentsCount} parcela(s) em A Receber?`)) return;
+    const schedule = await buildQuoteSchedule(q);
+    const preview = schedule
+      .map((s) => `• ${s.label} — ${formatDate(s.dueDate)} — ${formatBRL(s.amount)}`)
+      .join("\n");
+    if (!confirm(`Aceitar orçamento ${q.number} e gerar ${schedule.length} parcela(s) em A Receber?\n\n${preview}`)) return;
     await generateFinTxFromQuote(q, { category: "Vendas" });
     if (project.status === "orcamento") {
       await db.projects.update(pid, { status: "execucao", updatedAt: new Date().toISOString() });
     }
-    toast.success("Orçamento aceito — parcelas geradas em A Receber");
+    toast.success(`${schedule.length} parcela(s) geradas em A Receber`);
   };
 
   return (

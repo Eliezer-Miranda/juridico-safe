@@ -21,10 +21,88 @@ const addMonths = (iso: string, n: number) => {
   return d.toISOString().slice(0, 10);
 };
 
+const addDays = (iso: string, n: number) => {
+  const d = new Date(iso + "T00:00:00");
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+export interface ScheduleEntry {
+  label: string;
+  amount: number;
+  dueDate: string;
+  installmentInfo: string;
+}
+
+/**
+ * Builds the parcel schedule from a quote, honoring its payment condition when present.
+ * - Down payment (entrada) becomes parcel 1 due on issueDate (or today).
+ * - Remaining N installments spaced by intervalDays starting at firstDueDate.
+ * - Without a condition, falls back to monthly intervals × installmentsCount.
+ */
+export const buildQuoteSchedule = async (quote: Quote): Promise<ScheduleEntry[]> => {
+  const total = quote.total;
+  const today = new Date().toISOString().slice(0, 10);
+  const firstDue = quote.firstDueDate || today;
+
+  const cond = quote.paymentConditionId
+    ? await db.paymentConditions.get(quote.paymentConditionId)
+    : null;
+
+  const entries: ScheduleEntry[] = [];
+
+  if (cond) {
+    const n = Math.max(1, cond.installments);
+    const downPct = Math.min(100, Math.max(0, cond.downPaymentPct ?? 0));
+    const downAmount = round2((total * downPct) / 100);
+    const remaining = round2(total - downAmount);
+    const totalParcels = n + (downAmount > 0 ? 1 : 0);
+
+    if (downAmount > 0) {
+      entries.push({
+        label: `Entrada`,
+        amount: downAmount,
+        dueDate: quote.issueDate || today,
+        installmentInfo: `1/${totalParcels}`,
+      });
+    }
+
+    const base = Math.floor((remaining / n) * 100) / 100;
+    const last = round2(remaining - base * (n - 1));
+    for (let i = 0; i < n; i++) {
+      const idx = entries.length + 1;
+      entries.push({
+        label: `Parcela ${idx}/${totalParcels}`,
+        amount: i === n - 1 ? last : base,
+        dueDate: addDays(firstDue, i * cond.intervalDays),
+        installmentInfo: `${idx}/${totalParcels}`,
+      });
+    }
+    return entries;
+  }
+
+  // Fallback: monthly schedule based on installmentsCount
+  const n = Math.max(1, quote.installmentsCount || 1);
+  const base = Math.floor((total / n) * 100) / 100;
+  const last = round2(total - base * (n - 1));
+  for (let i = 0; i < n; i++) {
+    entries.push({
+      label: `Parcela ${i + 1}/${n}`,
+      amount: i === n - 1 ? last : base,
+      dueDate: addMonths(firstDue, i),
+      installmentInfo: `${i + 1}/${n}`,
+    });
+  }
+  return entries;
+};
+
 /**
  * Generates parcels (FinTx) for the quote and marks it as "faturado".
  * - Cliente => contas a receber
  * - Fornecedor => contas a pagar
+ * Uses the linked payment condition to compute dates/values when present.
  */
 export const generateFinTxFromQuote = async (
   quote: Quote,
@@ -32,30 +110,25 @@ export const generateFinTxFromQuote = async (
 ): Promise<number[]> => {
   if (!quote.id) throw new Error("Quote sem id");
   const kind: "receber" | "pagar" = quote.partyKind === "cliente" ? "receber" : "pagar";
-  const total = quote.total;
-  const n = Math.max(1, quote.installmentsCount || 1);
-  const base = Math.floor((total / n) * 100) / 100;
-  const last = +(total - base * (n - 1)).toFixed(2);
-  const firstDue = quote.firstDueDate || new Date().toISOString().slice(0, 10);
   const now = new Date().toISOString();
-  const ids: number[] = [];
   const category = opts.category ?? (kind === "receber" ? "Vendas" : "Compras");
+  const schedule = await buildQuoteSchedule(quote);
+  const ids: number[] = [];
 
-  for (let i = 0; i < n; i++) {
-    const amount = i === n - 1 ? last : base;
+  for (const entry of schedule) {
     const tx: FinTx = {
       kind,
-      description: `${quote.number} — Parcela ${i + 1}/${n}`,
+      description: `${quote.number} — ${entry.label}`,
       category,
       accountId: opts.accountId,
-      amount,
-      dueDate: addMonths(firstDue, i),
+      amount: entry.amount,
+      dueDate: entry.dueDate,
       status: "pendente",
       recurrence: "nenhuma",
       partyId: quote.partyId,
       quoteId: quote.id,
       projectId: quote.projectId,
-      installmentInfo: `${i + 1}/${n}`,
+      installmentInfo: entry.installmentInfo,
       notes: `Gerado do orçamento ${quote.number}`,
       createdAt: now,
     };
