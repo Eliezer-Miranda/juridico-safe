@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine, CheckCircle2 } from "lucide-react";
 import { formatBRL, formatDate } from "@/lib/format";
-import { generateFinTxFromQuote } from "@/lib/quotes";
+import { generateFinTxFromQuote, buildQuoteSchedule } from "@/lib/quotes";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/projetos/$id")({
