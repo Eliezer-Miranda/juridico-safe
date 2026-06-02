@@ -115,6 +115,19 @@ function ProjectDetail() {
     setOrder({ ...order, description: "", total: 0, notes: "" });
   };
 
+  const acceptQuote = async (quoteId: number) => {
+    const q = quotes.find((x) => x.id === quoteId);
+    if (!q) return;
+    if (q.partyKind !== "cliente") return toast.error("Apenas orçamentos de cliente geram A Receber.");
+    if (q.linkedTxIds?.length) return toast.error("Orçamento já faturado.");
+    if (!confirm(`Confirmar aceitação do orçamento ${q.number} e gerar ${q.installmentsCount} parcela(s) em A Receber?`)) return;
+    await generateFinTxFromQuote(q, { category: "Vendas" });
+    if (project.status === "orcamento") {
+      await db.projects.update(pid, { status: "execucao", updatedAt: new Date().toISOString() });
+    }
+    toast.success("Orçamento aceito — parcelas geradas em A Receber");
+  };
+
   return (
     <div className="p-6 lg:p-10 max-w-6xl mx-auto space-y-6 animate-in-up">
       <header className="flex flex-wrap items-start justify-between gap-4">
