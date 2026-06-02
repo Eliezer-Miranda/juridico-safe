@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine, CheckCircle2 } from "lucide-react";
 import { formatBRL, formatDate } from "@/lib/format";
+import { generateFinTxFromQuote } from "@/lib/quotes";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/projetos/$id")({
@@ -114,6 +115,19 @@ function ProjectDetail() {
     setOrder({ ...order, description: "", total: 0, notes: "" });
   };
 
+  const acceptQuote = async (quoteId: number) => {
+    const q = quotes.find((x) => x.id === quoteId);
+    if (!q) return;
+    if (q.partyKind !== "cliente") return toast.error("Apenas orçamentos de cliente geram A Receber.");
+    if (q.linkedTxIds?.length) return toast.error("Orçamento já faturado.");
+    if (!confirm(`Confirmar aceitação do orçamento ${q.number} e gerar ${q.installmentsCount} parcela(s) em A Receber?`)) return;
+    await generateFinTxFromQuote(q, { category: "Vendas" });
+    if (project.status === "orcamento") {
+      await db.projects.update(pid, { status: "execucao", updatedAt: new Date().toISOString() });
+    }
+    toast.success("Orçamento aceito — parcelas geradas em A Receber");
+  };
+
   return (
     <div className="p-6 lg:p-10 max-w-6xl mx-auto space-y-6 animate-in-up">
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -184,7 +198,14 @@ function ProjectDetail() {
                     <span className="text-muted-foreground">{formatDate(q.issueDate)}</span>
                     {q.status === "faturado" && <span className="ml-2 text-[10px] uppercase tracking-wider text-gold border border-gold/40 rounded px-1.5 py-0.5"><FileCheck2 className="h-3 w-3 inline" /> Faturado</span>}
                   </Link>
-                  <span className="font-medium">{formatBRL(q.total)}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">{formatBRL(q.total)}</span>
+                    {q.partyKind === "cliente" && !q.linkedTxIds?.length && (
+                      <Button size="sm" onClick={() => acceptQuote(q.id!)} className="bg-gradient-gold text-primary-foreground h-7 px-2 text-xs">
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Aceitar e gerar A Receber
+                      </Button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
