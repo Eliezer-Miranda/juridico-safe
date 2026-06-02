@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { ArrowLeft, FileSpreadsheet, Plus, Trash2, FileCheck2, ShoppingCart, ExternalLink, ArrowDownToLine, ArrowUpFromLine, CheckCircle2 } from "lucide-react";
 import { formatBRL, formatDate } from "@/lib/format";
+import { generateFinTxFromQuote } from "@/lib/quotes";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/projetos/$id")({
