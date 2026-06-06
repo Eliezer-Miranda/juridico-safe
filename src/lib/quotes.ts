@@ -106,13 +106,17 @@ export const buildQuoteSchedule = async (quote: Quote): Promise<ScheduleEntry[]>
  */
 export const generateFinTxFromQuote = async (
   quote: Quote,
-  opts: { accountId?: number; category?: string },
+  opts: { accountId?: number; category?: string; acceptedBy?: string },
 ): Promise<number[]> => {
   if (!quote.id) throw new Error("Quote sem id");
   const kind: "receber" | "pagar" = quote.partyKind === "cliente" ? "receber" : "pagar";
   const now = new Date().toISOString();
   const category = opts.category ?? (kind === "receber" ? "Vendas" : "Compras");
   const schedule = await buildQuoteSchedule(quote);
+  const cond = quote.paymentConditionId
+    ? await db.paymentConditions.get(quote.paymentConditionId)
+    : null;
+  const actor = opts.acceptedBy?.trim() || "Operador";
   const ids: number[] = [];
 
   for (const entry of schedule) {
@@ -136,11 +140,40 @@ export const generateFinTxFromQuote = async (
     ids.push(id);
   }
 
+  const originLabel = cond
+    ? `Condição: ${cond.name} (${cond.installments}x a cada ${cond.intervalDays}d${cond.downPaymentPct ? `, entrada ${cond.downPaymentPct}%` : ""})`
+    : `Condição manual: ${quote.installmentsCount}x mensal`;
+
+  const scheduleLines = schedule
+    .map((s) => `${s.label} — venc. ${s.dueDate} — R$ ${s.amount.toFixed(2)}`)
+    .join(" | ");
+
+  const baseDesc =
+    `Aceito por ${actor}. ${originLabel}. ${kind === "receber" ? "A Receber" : "A Pagar"} geradas (${schedule.length}): ${scheduleLines}`;
+
+  const quoteHist = quote.history ?? [];
+  quoteHist.push({ at: now, description: baseDesc });
+
   await db.quotes.update(quote.id, {
     status: "faturado",
     linkedTxIds: ids,
+    acceptedAt: now,
+    acceptedBy: actor,
+    history: quoteHist,
     updatedAt: now,
   });
+
+  if (quote.projectId) {
+    const proj = await db.projects.get(quote.projectId);
+    if (proj) {
+      const projHist = proj.history ?? [];
+      projHist.push({
+        at: now,
+        description: `Orçamento ${quote.number} aceito por ${actor}. ${originLabel}. ${schedule.length} parcela(s) → ${kind === "receber" ? "A Receber" : "A Pagar"}: ${scheduleLines}`,
+      });
+      await db.projects.update(quote.projectId, { history: projHist, updatedAt: now });
+    }
+  }
 
   return ids;
 };
