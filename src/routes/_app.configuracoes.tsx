@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { setPassword } from "@/lib/auth";
 import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
-import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2 } from "lucide-react";
+import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2, CalendarClock } from "lucide-react";
+import { PaymentConditionsManager } from "@/components/PaymentConditionsManager";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/configuracoes")({
