@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo, useState } from "react";
-import { db, type FinTx, type ProjectStatus } from "@/lib/db";
+import { db, getSettings, type FinTx, type ProjectStatus } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -125,7 +125,9 @@ function ProjectDetail() {
       .map((s) => `• ${s.label} — ${formatDate(s.dueDate)} — ${formatBRL(s.amount)}`)
       .join("\n");
     if (!confirm(`Aceitar orçamento ${q.number} e gerar ${schedule.length} parcela(s) em A Receber?\n\n${preview}`)) return;
-    await generateFinTxFromQuote(q, { category: "Vendas" });
+    const s = await getSettings();
+    const acceptedBy = s.lawyerName || s.officeName || "Operador";
+    await generateFinTxFromQuote(q, { category: "Vendas", acceptedBy });
     if (project.status === "orcamento") {
       await db.projects.update(pid, { status: "execucao", updatedAt: new Date().toISOString() });
     }
@@ -277,6 +279,27 @@ function ProjectDetail() {
           </CardContent>
         </Card>
       )}
+
+      {project.history && project.history.length > 0 && (
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <FileCheck2 className="h-4 w-4 text-gold" /> Histórico do projeto ({project.history.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {[...project.history].reverse().map((h, i) => (
+                <li key={i} className="text-xs border-l-2 border-gold/40 pl-3">
+                  <p className="text-muted-foreground">{new Date(h.at).toLocaleString("pt-BR")}</p>
+                  <p className="whitespace-pre-wrap">{h.description}</p>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
 
       <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
         <DialogContent className="bg-card max-w-2xl">

@@ -52,7 +52,12 @@ function QuoteView() {
   };
 
   const confirmBilling = async () => {
-    await generateFinTxFromQuote(quote, { accountId, category: quote.partyKind === "cliente" ? "Vendas" : "Compras" });
+    const s = await getSettings();
+    await generateFinTxFromQuote(quote, {
+      accountId,
+      category: quote.partyKind === "cliente" ? "Vendas" : "Compras",
+      acceptedBy: s.lawyerName || s.officeName || "Operador",
+    });
     toast.success(`${quote.installmentsCount} parcela(s) gerada(s) em ${quote.partyKind === "cliente" ? "A Receber" : "A Pagar"}`);
     setBillOpen(false);
   };
@@ -239,6 +244,31 @@ function QuoteView() {
                       ver <ExternalLink className="h-3 w-3" />
                     </Link>
                   </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {quote.history && quote.history.length > 0 && (
+        <Card className="bg-card border-border print:hidden">
+          <CardHeader>
+            <CardTitle className="font-display flex items-center gap-2">
+              <FileCheck2 className="h-4 w-4 text-gold" /> Histórico
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {quote.acceptedAt && (
+              <p className="text-xs text-muted-foreground mb-3">
+                Aceito por <span className="text-foreground font-medium">{quote.acceptedBy ?? "—"}</span> em {new Date(quote.acceptedAt).toLocaleString("pt-BR")}
+              </p>
+            )}
+            <ul className="space-y-2">
+              {quote.history.map((h, i) => (
+                <li key={i} className="text-xs border-l-2 border-gold/40 pl-3">
+                  <p className="text-muted-foreground">{new Date(h.at).toLocaleString("pt-BR")}</p>
+                  <p className="whitespace-pre-wrap">{h.description}</p>
                 </li>
               ))}
             </ul>
