@@ -13,7 +13,6 @@ const nav = [
   { to: "/projetos", label: "Projetos", icon: FolderKanban },
   { group: "Cadastros" },
   { to: "/cadastros/produtos", label: "Produtos & Serviços", icon: Package },
-  { to: "/cadastros/condicoes", label: "Condições de pagamento", icon: CalendarClock },
   { group: "Financeiro" },
   { to: "/financeiro", label: "Visão geral", icon: Wallet, exact: true },
   { to: "/financeiro/receber", label: "A receber", icon: ArrowDownToLine },

@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { setPassword } from "@/lib/auth";
 import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
-import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2 } from "lucide-react";
+import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2, CalendarClock } from "lucide-react";
+import { PaymentConditionsManager } from "@/components/PaymentConditionsManager";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/configuracoes")({
@@ -196,6 +197,18 @@ function SettingsPage() {
       </Card>
 
       <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <CalendarClock className="h-4 w-4 text-gold" /> Condições de pagamento
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentConditionsManager />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card border-border">
+
         <CardHeader><CardTitle className="font-display flex items-center gap-2"><KeyRound className="h-4 w-4 text-gold" /> Senha de acesso</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <Field label="Nova senha"><Input type="password" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} /></Field>
