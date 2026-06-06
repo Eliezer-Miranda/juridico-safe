@@ -197,6 +197,18 @@ function SettingsPage() {
       </Card>
 
       <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <CalendarClock className="h-4 w-4 text-gold" /> Condições de pagamento
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentConditionsManager />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card border-border">
+
         <CardHeader><CardTitle className="font-display flex items-center gap-2"><KeyRound className="h-4 w-4 text-gold" /> Senha de acesso</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <Field label="Nova senha"><Input type="password" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} /></Field>
