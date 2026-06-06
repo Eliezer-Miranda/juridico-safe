@@ -27,7 +27,10 @@ const TYPE_LABEL: Record<string, string> = { material: "Material", maoDeObra: "M
 
 function ProjectsIndex() {
   const navigate = useNavigate();
-  const projects = useLiveQuery(() => db.projects.orderBy("createdAt").reverse().toArray()) ?? [];
+  const projects = useLiveQuery(async () => {
+    const list = await db.projects.toArray();
+    return list.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+  }) ?? [];
   const clients = useLiveQuery(() => db.clients.toArray()) ?? [];
   const [q, setQ] = useState("");
   const clientName = (id: number) => clients.find((c) => c.id === id)?.name ?? "—";
