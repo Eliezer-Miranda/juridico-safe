@@ -280,6 +280,27 @@ function ProjectDetail() {
         </Card>
       )}
 
+      {project.history && project.history.length > 0 && (
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <FileCheck2 className="h-4 w-4 text-gold" /> Histórico do projeto ({project.history.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {[...project.history].reverse().map((h, i) => (
+                <li key={i} className="text-xs border-l-2 border-gold/40 pl-3">
+                  <p className="text-muted-foreground">{new Date(h.at).toLocaleString("pt-BR")}</p>
+                  <p className="whitespace-pre-wrap">{h.description}</p>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+
       <Dialog open={orderOpen} onOpenChange={setOrderOpen}>
         <DialogContent className="bg-card max-w-2xl">
           <DialogHeader><DialogTitle className="font-display text-xl">{orderTitle}</DialogTitle></DialogHeader>
