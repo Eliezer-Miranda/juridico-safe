@@ -52,7 +52,12 @@ function QuoteView() {
   };
 
   const confirmBilling = async () => {
-    await generateFinTxFromQuote(quote, { accountId, category: quote.partyKind === "cliente" ? "Vendas" : "Compras" });
+    const s = await getSettings();
+    await generateFinTxFromQuote(quote, {
+      accountId,
+      category: quote.partyKind === "cliente" ? "Vendas" : "Compras",
+      acceptedBy: s.lawyerName || s.officeName || "Operador",
+    });
     toast.success(`${quote.installmentsCount} parcela(s) gerada(s) em ${quote.partyKind === "cliente" ? "A Receber" : "A Pagar"}`);
     setBillOpen(false);
   };
