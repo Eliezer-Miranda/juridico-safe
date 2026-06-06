@@ -138,6 +138,7 @@ export interface Project {
   id?: number; code: string; name: string; clientId: number;
   type: ProjectType; status: ProjectStatus;
   startsAt?: string; endsAt?: string; description?: string; notes?: string;
+  history?: HistoryEntry[];
   createdAt: string; updatedAt: string;
 }
 
