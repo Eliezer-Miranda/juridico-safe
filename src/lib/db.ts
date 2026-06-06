@@ -114,7 +114,10 @@ export interface Quote {
   status: QuoteStatus; paymentMode: "avista" | "parcelado";
   installmentsCount: number; firstDueDate?: string;
   paymentConditionId?: number; projectId?: number;
-  linkedTxIds?: number[]; createdAt: string; updatedAt: string;
+  linkedTxIds?: number[];
+  acceptedAt?: string; acceptedBy?: string;
+  history?: HistoryEntry[];
+  createdAt: string; updatedAt: string;
 }
 
 export interface PaymentCondition {
