@@ -125,7 +125,9 @@ function ProjectDetail() {
       .map((s) => `• ${s.label} — ${formatDate(s.dueDate)} — ${formatBRL(s.amount)}`)
       .join("\n");
     if (!confirm(`Aceitar orçamento ${q.number} e gerar ${schedule.length} parcela(s) em A Receber?\n\n${preview}`)) return;
-    await generateFinTxFromQuote(q, { category: "Vendas" });
+    const s = await getSettings();
+    const acceptedBy = s.lawyerName || s.officeName || "Operador";
+    await generateFinTxFromQuote(q, { category: "Vendas", acceptedBy });
     if (project.status === "orcamento") {
       await db.projects.update(pid, { status: "execucao", updatedAt: new Date().toISOString() });
     }
