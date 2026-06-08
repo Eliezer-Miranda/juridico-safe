@@ -31,6 +31,7 @@ function ClientsPage() {
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
   const [q, setQ] = useState("");
   const [roleFilter, setRoleFilter] = useState<"todos" | PartyRole>("todos");
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
 
   const filtered = useMemo(() => {
     return clients.filter((c) => {
@@ -100,32 +101,61 @@ function ClientsPage() {
             const role = (c.role ?? "cliente") as PartyRole;
             const RoleIcon = role === "fornecedor" ? Briefcase : Building2;
             return (
-              <Link key={c.id} to="/clientes/$id" params={{ id: String(c.id) }}>
-                <Card className="bg-card border-border hover:border-gold transition p-5 cursor-pointer h-full">
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-gold grid place-items-center text-primary-foreground font-display text-sm shrink-0">
-                      {c.name.charAt(0).toUpperCase()}
+              <Card key={c.id} className="bg-card border-border hover:border-gold transition p-5 cursor-pointer h-full relative group">
+                <Link to="/clientes/$id" params={{ id: String(c.id) }} className="absolute inset-0 z-0" />
+                <div className="relative z-10 flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-gold grid place-items-center text-primary-foreground font-display text-sm shrink-0">
+                    {c.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-display text-lg truncate">{c.name}</p>
+                      <span className="text-[10px] uppercase tracking-wider text-gold border border-gold/40 rounded px-1.5 py-0.5 shrink-0 inline-flex items-center gap-1">
+                        <RoleIcon className="h-3 w-3" /> {ROLE_LABEL[role]}
+                      </span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="font-display text-lg truncate">{c.name}</p>
-                        <span className="text-[10px] uppercase tracking-wider text-gold border border-gold/40 rounded px-1.5 py-0.5 shrink-0 inline-flex items-center gap-1">
-                          <RoleIcon className="h-3 w-3" /> {ROLE_LABEL[role]}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{c.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {c.document}</p>
-                      <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-                        {c.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {c.email}</p>}
-                        {c.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {c.phone}</p>}
-                      </div>
+                    <p className="text-xs text-muted-foreground">{c.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {c.document}</p>
+                    <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                      {c.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {c.email}</p>}
+                      {c.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {c.phone}</p>}
                     </div>
                   </div>
-                </Card>
-              </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative z-10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setEditingClient(c);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4 text-gold" />
+                  </Button>
+                </div>
+              </Card>
             );
           })}
         </div>
       )}
+
+      <Dialog open={!!editingClient} onOpenChange={(open) => !open && setEditingClient(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Editar cadastro</DialogTitle>
+            <DialogDescription>Altere os dados do cliente ou fornecedor e salve.</DialogDescription>
+          </DialogHeader>
+          {editingClient && (
+            <ClientForm
+              initial={editingClient}
+              onSaved={(id) => {
+                toast.success("Cadastro atualizado");
+                setEditingClient(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
