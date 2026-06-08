@@ -1,11 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo, useState } from "react";
-import { db, type PartyRole } from "@/lib/db";
+import { db, type PartyRole, type Client } from "@/lib/db";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Search, Users, Mail, Phone, Plus, Building2, Briefcase } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ClientForm } from "@/components/ClientForm";
+import { toast } from "sonner";
+import { Search, Users, Mail, Phone, Plus, Building2, Briefcase, Pencil } from "lucide-react";
 
 export const Route = createFileRoute("/_app/clientes")({
   component: ClientsPage,
