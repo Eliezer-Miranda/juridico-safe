@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { getSettings } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -8,7 +8,8 @@ import { useLiveQuery } from "dexie-react-hooks";
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { group: "Comercial" },
-  { to: "/clientes", label: "Clientes & Fornecedores", icon: Users },
+  { to: "/clientes", label: "Clientes", icon: Users },
+  { to: "/fornecedores", label: "Fornecedores", icon: Briefcase },
   { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
   { to: "/projetos", label: "Projetos", icon: FolderKanban },
   { group: "Cadastros" },
