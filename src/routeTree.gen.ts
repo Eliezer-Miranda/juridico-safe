@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as AppFornecedoresRouteImport } from './routes/_app.fornecedores'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
 import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoes'
 import { Route as AppClientesRouteImport } from './routes/_app.clientes'
@@ -46,6 +47,11 @@ const AppRoute = AppRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFornecedoresRoute = AppFornecedoresRouteImport.update({
+  id: '/fornecedores',
+  path: '/fornecedores',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFinanceiroRoute = AppFinanceiroRouteImport.update({
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
   '/financeiro': typeof AppFinanceiroRouteWithChildren
+  '/fornecedores': typeof AppFornecedoresRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
   '/clientes/$id': typeof AppClientesIdRoute
@@ -184,6 +191,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
+  '/fornecedores': typeof AppFornecedoresRoute
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/_app/clientes': typeof AppClientesRouteWithChildren
   '/_app/configuracoes': typeof AppConfiguracoesRoute
   '/_app/financeiro': typeof AppFinanceiroRouteWithChildren
+  '/_app/fornecedores': typeof AppFornecedoresRoute
   '/_app/': typeof AppIndexRoute
   '/_app/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/_app/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/configuracoes'
     | '/financeiro'
+    | '/fornecedores'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
     | '/clientes/$id'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/clientes'
     | '/configuracoes'
+    | '/fornecedores'
     | '/'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/_app/clientes'
     | '/_app/configuracoes'
     | '/_app/financeiro'
+    | '/_app/fornecedores'
     | '/_app/'
     | '/_app/cadastros/condicoes'
     | '/_app/cadastros/produtos'
@@ -335,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/fornecedores': {
+      id: '/_app/fornecedores'
+      path: '/fornecedores'
+      fullPath: '/fornecedores'
+      preLoaderRoute: typeof AppFornecedoresRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/financeiro': {
@@ -525,6 +544,7 @@ interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
   AppFinanceiroRoute: typeof AppFinanceiroRouteWithChildren
+  AppFornecedoresRoute: typeof AppFornecedoresRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCadastrosCondicoesRoute: typeof AppCadastrosCondicoesRoute
   AppCadastrosProdutosRoute: typeof AppCadastrosProdutosRoute
@@ -543,6 +563,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRouteWithChildren,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
   AppFinanceiroRoute: AppFinanceiroRouteWithChildren,
+  AppFornecedoresRoute: AppFornecedoresRoute,
   AppIndexRoute: AppIndexRoute,
   AppCadastrosCondicoesRoute: AppCadastrosCondicoesRoute,
   AppCadastrosProdutosRoute: AppCadastrosProdutosRoute,
@@ -566,13 +587,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
