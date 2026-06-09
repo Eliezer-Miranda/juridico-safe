@@ -73,7 +73,7 @@ export function PartyList({ mode }: PartyListProps) {
           <p className="text-sm text-muted-foreground mt-1">{copy.subtitle(filtered.length)}</p>
         </div>
         <Button
-          onClick={() => navigate({ to: "/clientes/novo", search: { role: mode } as any })}
+          onClick={() => navigate({ to: mode === "cliente" ? "/clientes/novo" : "/fornecedores/novo" })}
           className="bg-gradient-gold text-primary-foreground shadow-gold"
         >
           <Plus className="h-4 w-4 mr-2" /> {copy.cta}
@@ -92,7 +92,7 @@ export function PartyList({ mode }: PartyListProps) {
           <Users className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">{copy.empty}</p>
           <Button
-            onClick={() => navigate({ to: "/clientes/novo", search: { role: mode } as any })}
+            onClick={() => navigate({ to: mode === "cliente" ? "/clientes/novo" : "/fornecedores/novo" })}
             className="mt-4 bg-gradient-gold text-primary-foreground shadow-gold"
           >
             <Plus className="h-4 w-4 mr-2" /> Cadastrar agora
