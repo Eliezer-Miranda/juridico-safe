@@ -15,13 +15,15 @@ type FormData = Omit<Client, "id" | "createdAt" | "updatedAt">;
 interface Props {
   initial?: Client;
   onSaved: (id: number) => void;
+  defaultRole?: "cliente" | "fornecedor" | "ambos";
+  lockRole?: boolean;
 }
 
-export function ClientForm({ initial, onSaved }: Props) {
+export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole = false }: Props) {
   const { register, handleSubmit, control, reset, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
       type: "PJ",
-      role: "cliente",
+      role: defaultRole,
       name: "",
       document: "",
       address: {},
@@ -53,13 +55,15 @@ export function ClientForm({ initial, onSaved }: Props) {
         <CardHeader><CardTitle className="font-display text-xl">Identificação</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <Grid cols={3}>
-            <Field label="Relação">
-              <select {...register("role")} className={inputCls}>
-                <option value="cliente">Cliente</option>
-                <option value="fornecedor">Fornecedor</option>
-                <option value="ambos">Cliente e Fornecedor</option>
-              </select>
-            </Field>
+            {!lockRole && (
+              <Field label="Relação">
+                <select {...register("role")} className={inputCls}>
+                  <option value="cliente">Cliente</option>
+                  <option value="fornecedor">Fornecedor</option>
+                  <option value="ambos">Cliente e Fornecedor</option>
+                </select>
+              </Field>
+            )}
             <Field label="Tipo">
               <select {...register("type")} className={inputCls}>
                 <option value="PJ">Pessoa Jurídica</option>
