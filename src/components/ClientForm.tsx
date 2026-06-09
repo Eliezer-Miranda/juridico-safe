@@ -38,14 +38,20 @@ export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole
   const onSubmit = async (data: FormData) => {
     if (!data.name?.trim()) return toast.error("Informe o nome / razão social.");
     const now = new Date().toISOString();
-    if (initial?.id) {
-      await db.clients.update(initial.id, { ...data, updatedAt: now });
-      toast.success("Cadastro atualizado");
-      onSaved(initial.id);
-    } else {
-      const id = await db.clients.add({ ...data, createdAt: now, updatedAt: now } as Client);
-      toast.success("Cadastro criado");
-      onSaved(id as number);
+    const payload = { ...data, role: lockRole ? defaultRole : (data.role ?? defaultRole) };
+    try {
+      if (initial?.id) {
+        await db.clients.update(initial.id, { ...payload, updatedAt: now });
+        toast.success("Cadastro atualizado");
+        onSaved(initial.id);
+      } else {
+        const id = await db.clients.add({ ...payload, createdAt: now, updatedAt: now } as Client);
+        toast.success("Cadastro criado");
+        onSaved(id as number);
+      }
+    } catch (err) {
+      console.error("Erro ao salvar cadastro", err);
+      toast.error("Não foi possível salvar. Verifique os dados e tente novamente.");
     }
   };
 
