@@ -24,6 +24,7 @@ import { Route as AppProjetosNovoRouteImport } from './routes/_app.projetos.novo
 import { Route as AppProjetosIdRouteImport } from './routes/_app.projetos.$id'
 import { Route as AppOrcamentosNovoRouteImport } from './routes/_app.orcamentos.novo'
 import { Route as AppOrcamentosIdRouteImport } from './routes/_app.orcamentos.$id'
+import { Route as AppFornecedoresNovoRouteImport } from './routes/_app.fornecedores.novo'
 import { Route as AppFinanceiroReceberRouteImport } from './routes/_app.financeiro.receber'
 import { Route as AppFinanceiroPagarRouteImport } from './routes/_app.financeiro.pagar'
 import { Route as AppFinanceiroInvestimentosRouteImport } from './routes/_app.financeiro.investimentos'
@@ -109,6 +110,11 @@ const AppOrcamentosIdRoute = AppOrcamentosIdRouteImport.update({
   path: '/orcamentos/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFornecedoresNovoRoute = AppFornecedoresNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => AppFornecedoresRoute,
+} as any)
 const AppFinanceiroReceberRoute = AppFinanceiroReceberRouteImport.update({
   id: '/receber',
   path: '/receber',
@@ -167,7 +173,7 @@ export interface FileRoutesByFullPath {
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
   '/financeiro': typeof AppFinanceiroRouteWithChildren
-  '/fornecedores': typeof AppFornecedoresRoute
+  '/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
   '/clientes/$id': typeof AppClientesIdRoute
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/financeiro/receber': typeof AppFinanceiroReceberRoute
+  '/fornecedores/novo': typeof AppFornecedoresNovoRoute
   '/orcamentos/$id': typeof AppOrcamentosIdRoute
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
@@ -191,7 +198,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
-  '/fornecedores': typeof AppFornecedoresRoute
+  '/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/financeiro/receber': typeof AppFinanceiroReceberRoute
+  '/fornecedores/novo': typeof AppFornecedoresNovoRoute
   '/orcamentos/$id': typeof AppOrcamentosIdRoute
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
@@ -219,7 +227,7 @@ export interface FileRoutesById {
   '/_app/clientes': typeof AppClientesRouteWithChildren
   '/_app/configuracoes': typeof AppConfiguracoesRoute
   '/_app/financeiro': typeof AppFinanceiroRouteWithChildren
-  '/_app/fornecedores': typeof AppFornecedoresRoute
+  '/_app/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/_app/': typeof AppIndexRoute
   '/_app/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/_app/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/_app/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/_app/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/_app/financeiro/receber': typeof AppFinanceiroReceberRoute
+  '/_app/fornecedores/novo': typeof AppFornecedoresNovoRoute
   '/_app/orcamentos/$id': typeof AppOrcamentosIdRoute
   '/_app/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/_app/projetos/$id': typeof AppProjetosIdRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
     | '/financeiro/receber'
+    | '/fornecedores/novo'
     | '/orcamentos/$id'
     | '/orcamentos/novo'
     | '/projetos/$id'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
     | '/financeiro/receber'
+    | '/fornecedores/novo'
     | '/orcamentos/$id'
     | '/orcamentos/novo'
     | '/projetos/$id'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/_app/financeiro/investimentos'
     | '/_app/financeiro/pagar'
     | '/_app/financeiro/receber'
+    | '/_app/fornecedores/novo'
     | '/_app/orcamentos/$id'
     | '/_app/orcamentos/novo'
     | '/_app/projetos/$id'
@@ -433,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrcamentosIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/fornecedores/novo': {
+      id: '/_app/fornecedores/novo'
+      path: '/novo'
+      fullPath: '/fornecedores/novo'
+      preLoaderRoute: typeof AppFornecedoresNovoRouteImport
+      parentRoute: typeof AppFornecedoresRoute
+    }
     '/_app/financeiro/receber': {
       id: '/_app/financeiro/receber'
       path: '/receber'
@@ -540,11 +559,23 @@ const AppFinanceiroRouteWithChildren = AppFinanceiroRoute._addFileChildren(
   AppFinanceiroRouteChildren,
 )
 
+interface AppFornecedoresRouteChildren {
+  AppFornecedoresNovoRoute: typeof AppFornecedoresNovoRoute
+}
+
+const AppFornecedoresRouteChildren: AppFornecedoresRouteChildren = {
+  AppFornecedoresNovoRoute: AppFornecedoresNovoRoute,
+}
+
+const AppFornecedoresRouteWithChildren = AppFornecedoresRoute._addFileChildren(
+  AppFornecedoresRouteChildren,
+)
+
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
   AppFinanceiroRoute: typeof AppFinanceiroRouteWithChildren
-  AppFornecedoresRoute: typeof AppFornecedoresRoute
+  AppFornecedoresRoute: typeof AppFornecedoresRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
   AppCadastrosCondicoesRoute: typeof AppCadastrosCondicoesRoute
   AppCadastrosProdutosRoute: typeof AppCadastrosProdutosRoute
@@ -563,7 +594,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRouteWithChildren,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
   AppFinanceiroRoute: AppFinanceiroRouteWithChildren,
-  AppFornecedoresRoute: AppFornecedoresRoute,
+  AppFornecedoresRoute: AppFornecedoresRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
   AppCadastrosCondicoesRoute: AppCadastrosCondicoesRoute,
   AppCadastrosProdutosRoute: AppCadastrosProdutosRoute,
