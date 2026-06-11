@@ -23,7 +23,7 @@ function QuoteView() {
   const qid = Number(id);
   const navigate = useNavigate();
   const quote = useLiveQuery(() => db.quotes.get(qid), [qid]);
-  const settings = useLiveQuery(() => getSettings());
+  const settings = useLiveQuery(() => db.settings.get(1));
   const party = useLiveQuery(async () => quote ? await db.clients.get(quote.partyId) : null, [quote?.partyId]);
   const accounts = useLiveQuery(() => db.accounts.toArray()) ?? [];
   const linkedTx = useLiveQuery(async () => {
