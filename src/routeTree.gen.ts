@@ -18,8 +18,10 @@ import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoe
 import { Route as AppClientesRouteImport } from './routes/_app.clientes'
 import { Route as AppProjetosIndexRouteImport } from './routes/_app.projetos.index'
 import { Route as AppOrcamentosIndexRouteImport } from './routes/_app.orcamentos.index'
+import { Route as AppFornecedoresIndexRouteImport } from './routes/_app.fornecedores.index'
 import { Route as AppFinanceiroIndexRouteImport } from './routes/_app.financeiro.index'
 import { Route as AppContratosIndexRouteImport } from './routes/_app.contratos.index'
+import { Route as AppClientesIndexRouteImport } from './routes/_app.clientes.index'
 import { Route as AppProjetosNovoRouteImport } from './routes/_app.projetos.novo'
 import { Route as AppProjetosIdRouteImport } from './routes/_app.projetos.$id'
 import { Route as AppOrcamentosNovoRouteImport } from './routes/_app.orcamentos.novo'
@@ -80,6 +82,11 @@ const AppOrcamentosIndexRoute = AppOrcamentosIndexRouteImport.update({
   path: '/orcamentos/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFornecedoresIndexRoute = AppFornecedoresIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppFornecedoresRoute,
+} as any)
 const AppFinanceiroIndexRoute = AppFinanceiroIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -89,6 +96,11 @@ const AppContratosIndexRoute = AppContratosIndexRouteImport.update({
   id: '/contratos/',
   path: '/contratos/',
   getParentRoute: () => AppRoute,
+} as any)
+const AppClientesIndexRoute = AppClientesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppClientesRoute,
 } as any)
 const AppProjetosNovoRoute = AppProjetosNovoRouteImport.update({
   id: '/projetos/novo',
@@ -189,16 +201,16 @@ export interface FileRoutesByFullPath {
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
   '/projetos/novo': typeof AppProjetosNovoRoute
+  '/clientes/': typeof AppClientesIndexRoute
   '/contratos/': typeof AppContratosIndexRoute
   '/financeiro/': typeof AppFinanceiroIndexRoute
+  '/fornecedores/': typeof AppFornecedoresIndexRoute
   '/orcamentos/': typeof AppOrcamentosIndexRoute
   '/projetos/': typeof AppProjetosIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
-  '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
-  '/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -215,8 +227,10 @@ export interface FileRoutesByTo {
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
   '/projetos/novo': typeof AppProjetosNovoRoute
+  '/clientes': typeof AppClientesIndexRoute
   '/contratos': typeof AppContratosIndexRoute
   '/financeiro': typeof AppFinanceiroIndexRoute
+  '/fornecedores': typeof AppFornecedoresIndexRoute
   '/orcamentos': typeof AppOrcamentosIndexRoute
   '/projetos': typeof AppProjetosIndexRoute
 }
@@ -244,8 +258,10 @@ export interface FileRoutesById {
   '/_app/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/_app/projetos/$id': typeof AppProjetosIdRoute
   '/_app/projetos/novo': typeof AppProjetosNovoRoute
+  '/_app/clientes/': typeof AppClientesIndexRoute
   '/_app/contratos/': typeof AppContratosIndexRoute
   '/_app/financeiro/': typeof AppFinanceiroIndexRoute
+  '/_app/fornecedores/': typeof AppFornecedoresIndexRoute
   '/_app/orcamentos/': typeof AppOrcamentosIndexRoute
   '/_app/projetos/': typeof AppProjetosIndexRoute
 }
@@ -273,16 +289,16 @@ export interface FileRouteTypes {
     | '/orcamentos/novo'
     | '/projetos/$id'
     | '/projetos/novo'
+    | '/clientes/'
     | '/contratos/'
     | '/financeiro/'
+    | '/fornecedores/'
     | '/orcamentos/'
     | '/projetos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
-    | '/clientes'
     | '/configuracoes'
-    | '/fornecedores'
     | '/'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
@@ -299,8 +315,10 @@ export interface FileRouteTypes {
     | '/orcamentos/novo'
     | '/projetos/$id'
     | '/projetos/novo'
+    | '/clientes'
     | '/contratos'
     | '/financeiro'
+    | '/fornecedores'
     | '/orcamentos'
     | '/projetos'
   id:
@@ -327,8 +345,10 @@ export interface FileRouteTypes {
     | '/_app/orcamentos/novo'
     | '/_app/projetos/$id'
     | '/_app/projetos/novo'
+    | '/_app/clientes/'
     | '/_app/contratos/'
     | '/_app/financeiro/'
+    | '/_app/fornecedores/'
     | '/_app/orcamentos/'
     | '/_app/projetos/'
   fileRoutesById: FileRoutesById
@@ -403,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrcamentosIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/fornecedores/': {
+      id: '/_app/fornecedores/'
+      path: '/'
+      fullPath: '/fornecedores/'
+      preLoaderRoute: typeof AppFornecedoresIndexRouteImport
+      parentRoute: typeof AppFornecedoresRoute
+    }
     '/_app/financeiro/': {
       id: '/_app/financeiro/'
       path: '/'
@@ -416,6 +443,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/contratos/'
       preLoaderRoute: typeof AppContratosIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/clientes/': {
+      id: '/_app/clientes/'
+      path: '/'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof AppClientesIndexRouteImport
+      parentRoute: typeof AppClientesRoute
     }
     '/_app/projetos/novo': {
       id: '/_app/projetos/novo'
@@ -528,11 +562,13 @@ declare module '@tanstack/react-router' {
 interface AppClientesRouteChildren {
   AppClientesIdRoute: typeof AppClientesIdRoute
   AppClientesNovoRoute: typeof AppClientesNovoRoute
+  AppClientesIndexRoute: typeof AppClientesIndexRoute
 }
 
 const AppClientesRouteChildren: AppClientesRouteChildren = {
   AppClientesIdRoute: AppClientesIdRoute,
   AppClientesNovoRoute: AppClientesNovoRoute,
+  AppClientesIndexRoute: AppClientesIndexRoute,
 }
 
 const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
@@ -561,10 +597,12 @@ const AppFinanceiroRouteWithChildren = AppFinanceiroRoute._addFileChildren(
 
 interface AppFornecedoresRouteChildren {
   AppFornecedoresNovoRoute: typeof AppFornecedoresNovoRoute
+  AppFornecedoresIndexRoute: typeof AppFornecedoresIndexRoute
 }
 
 const AppFornecedoresRouteChildren: AppFornecedoresRouteChildren = {
   AppFornecedoresNovoRoute: AppFornecedoresNovoRoute,
+  AppFornecedoresIndexRoute: AppFornecedoresIndexRoute,
 }
 
 const AppFornecedoresRouteWithChildren = AppFornecedoresRoute._addFileChildren(
