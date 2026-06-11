@@ -30,7 +30,7 @@ export const AppShell = () => {
   const { authed, ready, needsSetup, signOut } = useAuth();
   const navigate = useNavigate();
   const loc = useLocation();
-  const settings = useLiveQuery(() => getSettings());
+  const settings = useLiveQuery(() => db.settings.get(1));
 
   useEffect(() => {
     if (!ready) return;

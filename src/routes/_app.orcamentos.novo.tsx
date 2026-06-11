@@ -32,7 +32,7 @@ function NewQuotePage() {
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
   const products = useLiveQuery(() => db.products.orderBy("name").toArray()) ?? [];
   const conditions = useLiveQuery(() => db.paymentConditions.toArray()) ?? [];
-  const settings = useLiveQuery(() => getSettings());
+  const settings = useLiveQuery(() => db.settings.get(1));
   const project = useLiveQuery(async () => search.projectId ? await db.projects.get(search.projectId) : null, [search.projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">("cliente");

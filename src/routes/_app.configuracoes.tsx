@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_app/configuracoes")({
 });
 
 function SettingsPage() {
-  const settings = useLiveQuery(() => getSettings());
+  const settings = useLiveQuery(() => db.settings.get(1));
   const fileRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLInputElement>(null);
 
