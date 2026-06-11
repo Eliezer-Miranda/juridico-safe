@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase } from "lucide-react";
 import { useAuth } from "./AuthProvider";
-import { getSettings } from "@/lib/db";
+import { db } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
 
 const nav = [
