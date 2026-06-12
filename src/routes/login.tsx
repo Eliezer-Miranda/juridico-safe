@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Scale, Lock } from "lucide-react";
+import { Banknote, Lock } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,9 +52,9 @@ function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-gold grid place-items-center shadow-gold">
-              <Scale className="h-6 w-6 text-primary-foreground" />
+              <Banknote className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="font-display text-2xl">Aurum Contratos</span>
+            <span className="font-display text-2xl">Meu Negócio</span>
           </div>
           <div className="space-y-4 max-w-md">
             <h1 className="font-display text-5xl leading-tight">
@@ -74,8 +74,8 @@ function LoginPage() {
       <div className="flex items-center justify-center p-6 sm:p-12">
         <form onSubmit={onSubmit} className="w-full max-w-sm animate-in-up">
           <div className="flex items-center gap-2 mb-6 lg:hidden">
-            <Scale className="h-6 w-6 text-gold" />
-            <span className="font-display text-xl">Aurum Contratos</span>
+            <Banknote className="h-6 w-6 text-gold" />
+            <span className="font-display text-xl">Meu Negócio</span>
           </div>
           <h2 className="font-display text-3xl mb-1">
             {needsSetup ? "Defina sua senha" : "Bem-vindo de volta"}

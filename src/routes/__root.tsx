@@ -45,10 +45,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aurum Jurídico — Gestão de Contratos" },
+      { title: "Meu Negócio — Gestão financeira e contratos" },
       { name: "description", content: "Sistema offline de gestão de contratos jurídicos para advogados e escritórios." },
-      { property: "og:title", content: "Aurum Jurídico — Gestão de Contratos" },
-      { name: "twitter:title", content: "Aurum Jurídico — Gestão de Contratos" },
+      { property: "og:title", content: "Meu Negócio — Gestão financeira e contratos" },
+      { name: "twitter:title", content: "Meu Negócio — Gestão financeira e contratos" },
       { property: "og:description", content: "Sistema offline de gestão de contratos jurídicos para advogados e escritórios." },
       { name: "twitter:description", content: "Sistema offline de gestão de contratos jurídicos para advogados e escritórios." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4b7119af-4edd-452e-a3c3-6a9f113f7c50/id-preview-b4e70b42--10d5cd61-6f6c-4703-b182-0b5a10d819a6.lovable.app-1779154390975.png" },
