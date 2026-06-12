@@ -113,6 +113,7 @@ export const AppShell = () => {
       </aside>
 
       <main className="flex-1 min-w-0 overflow-x-hidden">
+        <DueAlerts />
         <Outlet />
       </main>
     </div>
