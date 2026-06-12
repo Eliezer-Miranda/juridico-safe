@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Scale, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Banknote, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase } from "lucide-react";
+import { DueAlerts } from "./DueAlerts";
 import { useAuth } from "./AuthProvider";
 import { db } from "@/lib/db";
 import { useLiveQuery } from "dexie-react-hooks";
