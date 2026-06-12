@@ -42,7 +42,7 @@ export const AppShell = () => {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
         <div className="text-center">
-          <Scale className="mx-auto h-10 w-10 text-gold animate-pulse" />
+          <Banknote className="mx-auto h-10 w-10 text-gold animate-pulse" />
           <p className="mt-3 text-sm text-muted-foreground">Carregando…</p>
         </div>
       </div>
@@ -58,11 +58,11 @@ export const AppShell = () => {
               <img src={settings.logoDataUrl} alt="Logo" className="h-10 w-10 rounded-lg object-cover shadow-gold" />
             ) : (
               <div className="h-10 w-10 rounded-lg bg-gradient-gold grid place-items-center shadow-gold">
-                <Scale className="h-5 w-5 text-primary-foreground" />
+                <Banknote className="h-5 w-5 text-primary-foreground" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Sua Empresa"}</p>
+              <p className="font-display text-lg leading-tight truncate">{settings?.officeName ?? "Meu Negócio"}</p>
               <p className="text-xs text-muted-foreground truncate">{settings?.companyTagline ?? "Gestão financeira & contratos"}</p>
             </div>
           </div>
