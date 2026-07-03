@@ -25,7 +25,6 @@ import { Route as AppClientesIndexRouteImport } from './routes/_app.clientes.ind
 import { Route as AppProjetosNovoRouteImport } from './routes/_app.projetos.novo'
 import { Route as AppProjetosIdRouteImport } from './routes/_app.projetos.$id'
 import { Route as AppOrcamentosNovoRouteImport } from './routes/_app.orcamentos.novo'
-import { Route as AppOrcamentosIdRouteImport } from './routes/_app.orcamentos.$id'
 import { Route as AppFornecedoresNovoRouteImport } from './routes/_app.fornecedores.novo'
 import { Route as AppFinanceiroReceberRouteImport } from './routes/_app.financeiro.receber'
 import { Route as AppFinanceiroPagarRouteImport } from './routes/_app.financeiro.pagar'
@@ -37,6 +36,7 @@ import { Route as AppClientesNovoRouteImport } from './routes/_app.clientes.novo
 import { Route as AppClientesIdRouteImport } from './routes/_app.clientes.$id'
 import { Route as AppCadastrosProdutosRouteImport } from './routes/_app.cadastros.produtos'
 import { Route as AppCadastrosCondicoesRouteImport } from './routes/_app.cadastros.condicoes'
+import { Route as AppOrcamentosIdIndexRouteImport } from './routes/_app.orcamentos.$id.index'
 import { Route as AppOrcamentosIdEditarRouteImport } from './routes/_app.orcamentos.$id.editar'
 
 const LoginRoute = LoginRouteImport.update({
@@ -118,11 +118,6 @@ const AppOrcamentosNovoRoute = AppOrcamentosNovoRouteImport.update({
   path: '/orcamentos/novo',
   getParentRoute: () => AppRoute,
 } as any)
-const AppOrcamentosIdRoute = AppOrcamentosIdRouteImport.update({
-  id: '/orcamentos/$id',
-  path: '/orcamentos/$id',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppFornecedoresNovoRoute = AppFornecedoresNovoRouteImport.update({
   id: '/novo',
   path: '/novo',
@@ -179,10 +174,15 @@ const AppCadastrosCondicoesRoute = AppCadastrosCondicoesRouteImport.update({
   path: '/cadastros/condicoes',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrcamentosIdIndexRoute = AppOrcamentosIdIndexRouteImport.update({
+  id: '/orcamentos/$id/',
+  path: '/orcamentos/$id/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOrcamentosIdEditarRoute = AppOrcamentosIdEditarRouteImport.update({
-  id: '/editar',
-  path: '/editar',
-  getParentRoute: () => AppOrcamentosIdRoute,
+  id: '/orcamentos/$id/editar',
+  path: '/orcamentos/$id/editar',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -203,7 +203,6 @@ export interface FileRoutesByFullPath {
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/financeiro/receber': typeof AppFinanceiroReceberRoute
   '/fornecedores/novo': typeof AppFornecedoresNovoRoute
-  '/orcamentos/$id': typeof AppOrcamentosIdRouteWithChildren
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
   '/projetos/novo': typeof AppProjetosNovoRoute
@@ -214,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/orcamentos/': typeof AppOrcamentosIndexRoute
   '/projetos/': typeof AppProjetosIndexRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -230,7 +230,6 @@ export interface FileRoutesByTo {
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/financeiro/receber': typeof AppFinanceiroReceberRoute
   '/fornecedores/novo': typeof AppFornecedoresNovoRoute
-  '/orcamentos/$id': typeof AppOrcamentosIdRouteWithChildren
   '/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/projetos/$id': typeof AppProjetosIdRoute
   '/projetos/novo': typeof AppProjetosNovoRoute
@@ -241,6 +240,7 @@ export interface FileRoutesByTo {
   '/orcamentos': typeof AppOrcamentosIndexRoute
   '/projetos': typeof AppProjetosIndexRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/orcamentos/$id': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -262,7 +262,6 @@ export interface FileRoutesById {
   '/_app/financeiro/pagar': typeof AppFinanceiroPagarRoute
   '/_app/financeiro/receber': typeof AppFinanceiroReceberRoute
   '/_app/fornecedores/novo': typeof AppFornecedoresNovoRoute
-  '/_app/orcamentos/$id': typeof AppOrcamentosIdRouteWithChildren
   '/_app/orcamentos/novo': typeof AppOrcamentosNovoRoute
   '/_app/projetos/$id': typeof AppProjetosIdRoute
   '/_app/projetos/novo': typeof AppProjetosNovoRoute
@@ -273,6 +272,7 @@ export interface FileRoutesById {
   '/_app/orcamentos/': typeof AppOrcamentosIndexRoute
   '/_app/projetos/': typeof AppProjetosIndexRoute
   '/_app/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/_app/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -294,7 +294,6 @@ export interface FileRouteTypes {
     | '/financeiro/pagar'
     | '/financeiro/receber'
     | '/fornecedores/novo'
-    | '/orcamentos/$id'
     | '/orcamentos/novo'
     | '/projetos/$id'
     | '/projetos/novo'
@@ -305,6 +304,7 @@ export interface FileRouteTypes {
     | '/orcamentos/'
     | '/projetos/'
     | '/orcamentos/$id/editar'
+    | '/orcamentos/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -321,7 +321,6 @@ export interface FileRouteTypes {
     | '/financeiro/pagar'
     | '/financeiro/receber'
     | '/fornecedores/novo'
-    | '/orcamentos/$id'
     | '/orcamentos/novo'
     | '/projetos/$id'
     | '/projetos/novo'
@@ -332,6 +331,7 @@ export interface FileRouteTypes {
     | '/orcamentos'
     | '/projetos'
     | '/orcamentos/$id/editar'
+    | '/orcamentos/$id'
   id:
     | '__root__'
     | '/_app'
@@ -352,7 +352,6 @@ export interface FileRouteTypes {
     | '/_app/financeiro/pagar'
     | '/_app/financeiro/receber'
     | '/_app/fornecedores/novo'
-    | '/_app/orcamentos/$id'
     | '/_app/orcamentos/novo'
     | '/_app/projetos/$id'
     | '/_app/projetos/novo'
@@ -363,6 +362,7 @@ export interface FileRouteTypes {
     | '/_app/orcamentos/'
     | '/_app/projetos/'
     | '/_app/orcamentos/$id/editar'
+    | '/_app/orcamentos/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -484,13 +484,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrcamentosNovoRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/orcamentos/$id': {
-      id: '/_app/orcamentos/$id'
-      path: '/orcamentos/$id'
-      fullPath: '/orcamentos/$id'
-      preLoaderRoute: typeof AppOrcamentosIdRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/fornecedores/novo': {
       id: '/_app/fornecedores/novo'
       path: '/novo'
@@ -568,12 +561,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCadastrosCondicoesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/orcamentos/$id/': {
+      id: '/_app/orcamentos/$id/'
+      path: '/orcamentos/$id'
+      fullPath: '/orcamentos/$id/'
+      preLoaderRoute: typeof AppOrcamentosIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/orcamentos/$id/editar': {
       id: '/_app/orcamentos/$id/editar'
-      path: '/editar'
+      path: '/orcamentos/$id/editar'
       fullPath: '/orcamentos/$id/editar'
       preLoaderRoute: typeof AppOrcamentosIdEditarRouteImport
-      parentRoute: typeof AppOrcamentosIdRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
@@ -628,18 +628,6 @@ const AppFornecedoresRouteWithChildren = AppFornecedoresRoute._addFileChildren(
   AppFornecedoresRouteChildren,
 )
 
-interface AppOrcamentosIdRouteChildren {
-  AppOrcamentosIdEditarRoute: typeof AppOrcamentosIdEditarRoute
-}
-
-const AppOrcamentosIdRouteChildren: AppOrcamentosIdRouteChildren = {
-  AppOrcamentosIdEditarRoute: AppOrcamentosIdEditarRoute,
-}
-
-const AppOrcamentosIdRouteWithChildren = AppOrcamentosIdRoute._addFileChildren(
-  AppOrcamentosIdRouteChildren,
-)
-
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
@@ -650,13 +638,14 @@ interface AppRouteChildren {
   AppCadastrosProdutosRoute: typeof AppCadastrosProdutosRoute
   AppContratosIdRoute: typeof AppContratosIdRoute
   AppContratosNovoRoute: typeof AppContratosNovoRoute
-  AppOrcamentosIdRoute: typeof AppOrcamentosIdRouteWithChildren
   AppOrcamentosNovoRoute: typeof AppOrcamentosNovoRoute
   AppProjetosIdRoute: typeof AppProjetosIdRoute
   AppProjetosNovoRoute: typeof AppProjetosNovoRoute
   AppContratosIndexRoute: typeof AppContratosIndexRoute
   AppOrcamentosIndexRoute: typeof AppOrcamentosIndexRoute
   AppProjetosIndexRoute: typeof AppProjetosIndexRoute
+  AppOrcamentosIdEditarRoute: typeof AppOrcamentosIdEditarRoute
+  AppOrcamentosIdIndexRoute: typeof AppOrcamentosIdIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -669,13 +658,14 @@ const AppRouteChildren: AppRouteChildren = {
   AppCadastrosProdutosRoute: AppCadastrosProdutosRoute,
   AppContratosIdRoute: AppContratosIdRoute,
   AppContratosNovoRoute: AppContratosNovoRoute,
-  AppOrcamentosIdRoute: AppOrcamentosIdRouteWithChildren,
   AppOrcamentosNovoRoute: AppOrcamentosNovoRoute,
   AppProjetosIdRoute: AppProjetosIdRoute,
   AppProjetosNovoRoute: AppProjetosNovoRoute,
   AppContratosIndexRoute: AppContratosIndexRoute,
   AppOrcamentosIndexRoute: AppOrcamentosIndexRoute,
   AppProjetosIndexRoute: AppProjetosIndexRoute,
+  AppOrcamentosIdEditarRoute: AppOrcamentosIdEditarRoute,
+  AppOrcamentosIdIndexRoute: AppOrcamentosIdIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

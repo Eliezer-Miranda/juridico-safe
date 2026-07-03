@@ -12,14 +12,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/orcamentos/$id")({
+export const Route = createFileRoute("/_app/orcamentos/$id/")({
   component: QuoteView,
 });
 
 const STATUS_OPTS: QuoteStatus[] = ["rascunho", "enviado", "aprovado", "recusado", "expirado", "faturado"];
 
 function QuoteView() {
-  const { id } = useParams({ from: "/_app/orcamentos/$id" });
+  const { id } = useParams({ from: "/_app/orcamentos/$id/" });
   const qid = Number(id);
   const navigate = useNavigate();
   const quote = useLiveQuery(() => db.quotes.get(qid), [qid]);
