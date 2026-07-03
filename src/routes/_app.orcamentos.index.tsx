@@ -7,7 +7,7 @@ import { formatBRL, formatDate } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileSpreadsheet, Plus, Search, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { FileSpreadsheet, Plus, Search, ArrowDownToLine, ArrowUpFromLine, Pencil } from "lucide-react";
 
 export const Route = createFileRoute("/_app/orcamentos/")({
   component: QuotesIndex,
@@ -93,6 +93,7 @@ function QuotesIndex() {
                   <th className="text-left px-4 py-3">Validade</th>
                   <th className="text-right px-4 py-3">Total</th>
                   <th className="text-left px-4 py-3">Status</th>
+                  <th className="px-4 py-3 w-16"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -117,6 +118,16 @@ function QuotesIndex() {
                       <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded ${STATUS_COLOR[x.status]}`}>
                         {QUOTE_STATUS_LABEL[x.status]}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <Link
+                        to="/orcamentos/$id/editar"
+                        params={{ id: String(x.id) }}
+                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-gold"
+                        title="Editar orçamento"
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Editar
+                      </Link>
                     </td>
                   </tr>
                 ))}
