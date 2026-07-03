@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink } from "lucide-react";
+import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/orcamentos/$id")({
@@ -92,6 +92,13 @@ function QuoteView() {
           </div>
           <Button variant="outline" onClick={() => window.print()} className="self-end">
             <Printer className="h-4 w-4 mr-2" /> Imprimir / PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate({ to: "/orcamentos/$id/editar", params: { id: String(qid) } })}
+            className="self-end"
+          >
+            <Pencil className="h-4 w-4 mr-2" /> Editar
           </Button>
           {!quote.linkedTxIds?.length ? (
             <Button onClick={() => setBillOpen(true)} className="self-end bg-gradient-gold text-primary-foreground shadow-gold">
