@@ -114,9 +114,16 @@ export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole
               <Input {...register("name", { required: true })} />
             </Field>
             <Field label="CPF / CNPJ">
-              <Controller control={control} name="document" render={({ field }) => (
-                <Input {...field} onChange={(e) => field.onChange(maskCPFCNPJ(e.target.value))} />
-              )} />
+              <div className="flex gap-2">
+                <Controller control={control} name="document" render={({ field }) => (
+                  <Input {...field} onChange={(e) => field.onChange(maskCPFCNPJ(e.target.value))} />
+                )} />
+                {type === "PJ" && (
+                  <Button type="button" variant="outline" size="icon" onClick={lookupCNPJ} disabled={lookingUp} title="Buscar dados pelo CNPJ">
+                    {lookingUp ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  </Button>
+                )}
+              </div>
             </Field>
             <Field label="RG / IE"><Input {...register("rgIe")} /></Field>
             <Field label="Representante legal"><Input {...register("legalRep")} placeholder="Sócio ou responsável" /></Field>
