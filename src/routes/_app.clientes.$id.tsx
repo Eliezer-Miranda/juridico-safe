@@ -39,6 +39,9 @@ function EditClient() {
           <p className="text-xs uppercase tracking-widest text-gold font-medium mt-2">Editar cadastro</p>
           <h1 className="font-display text-4xl mt-1">{client.name}</h1>
           <p className="text-sm text-muted-foreground mt-1">{client.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {client.document}</p>
+          {client.type === "PJ" && client.contactName && (
+            <p className="text-sm text-gold mt-1">Contato: {client.contactName}</p>
+          )}
         </div>
         <Button variant="outline" onClick={remove} className="text-destructive border-destructive/30">
           <Trash2 className="h-4 w-4 mr-2" /> Excluir

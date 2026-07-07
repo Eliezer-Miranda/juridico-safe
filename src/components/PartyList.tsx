@@ -56,7 +56,7 @@ export function PartyList({ mode }: PartyListProps) {
       })
       .filter((c) => {
         if (!q) return true;
-        const hay = `${c.name} ${c.document} ${c.phone ?? ""} ${c.email ?? ""}`.toLowerCase();
+        const hay = `${c.name} ${c.contactName ?? ""} ${c.document} ${c.phone ?? ""} ${c.email ?? ""}`.toLowerCase();
         return hay.includes(q.toLowerCase());
       });
   }, [all, q, mode]);
@@ -115,6 +115,9 @@ export function PartyList({ mode }: PartyListProps) {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">{c.type === "PF" ? "Pessoa Física" : "Pessoa Jurídica"} · {c.document}</p>
+                  {c.type === "PJ" && c.contactName && (
+                    <p className="text-xs text-gold mt-1">Contato: {c.contactName}</p>
+                  )}
                   <div className="mt-2 space-y-1 text-xs text-muted-foreground">
                     {c.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {c.email}</p>}
                     {c.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {c.phone}</p>}

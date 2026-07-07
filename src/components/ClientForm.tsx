@@ -113,6 +113,11 @@ export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole
             <Field label="Nome / Razão social">
               <Input {...register("name", { required: true })} />
             </Field>
+            {type === "PJ" && (
+              <Field label="Nome de contato">
+                <Input {...register("contactName")} placeholder="Pessoa responsável pelo relacionamento" />
+              </Field>
+            )}
             <Field label="CPF / CNPJ">
               <div className="flex gap-2">
                 <Controller control={control} name="document" render={({ field }) => (
