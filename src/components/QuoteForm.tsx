@@ -249,22 +249,21 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
             <div key={idx} className="grid grid-cols-12 gap-2 items-end border-b border-border/50 pb-3">
               <div className="col-span-12 md:col-span-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Produto (opcional)</Label>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Produto (opcional / avulso)</Label>
                   <button type="button" onClick={() => openNewProduct(idx)} className="text-[10px] text-gold hover:underline">
                     + Novo produto
                   </button>
                 </div>
-                <Select value={it.productId ? String(it.productId) : ""} onValueChange={(v) => pickProduct(idx, Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Buscar cadastro…" /></SelectTrigger>
-                  <SelectContent>
-                    {products.length === 0 && <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhum produto. Cadastre acima.</div>}
-                    {products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}{p.sku ? ` (${p.sku})` : ""}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <ProductSearch
+                  products={products}
+                  selectedId={it.productId}
+                  onPick={(p) => pickProduct(idx, p.id!)}
+                  onClear={() => setItem(idx, { productId: undefined })}
+                />
               </div>
               <div className="col-span-12 md:col-span-3">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Descrição</Label>
-                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value })} placeholder="Descrição do item" />
+                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value, productId: undefined })} placeholder="Item avulso ou descrição livre" />
               </div>
               <div className="col-span-3 md:col-span-1">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Qtd</Label>
@@ -385,6 +384,71 @@ function Field({ label, children }: { label: React.ReactNode; children: React.Re
     <div className="space-y-1.5">
       <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function ProductSearch({
+  products, selectedId, onPick, onClear,
+}: {
+  products: Product[];
+  selectedId?: number;
+  onPick: (p: Product) => void;
+  onClear: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const selected = selectedId ? products.find((p) => p.id === selectedId) : undefined;
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return products
+      .filter((p) => {
+        const hay = `${p.name} ${p.sku ?? ""} ${p.category ?? ""}`.toLowerCase();
+        return hay.includes(q) || p.name.toLowerCase().startsWith(q);
+      })
+      .slice(0, 8);
+  }, [products, query]);
+
+  if (selected) {
+    return (
+      <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-background text-sm">
+        <span className="flex-1 truncate">{selected.name}{selected.sku ? ` (${selected.sku})` : ""}</span>
+        <button type="button" onClick={() => { onClear(); setQuery(""); }} className="text-[10px] text-muted-foreground hover:text-destructive">
+          trocar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <Input
+        value={query}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        placeholder="Digite palavra-chave ou iniciais…"
+      />
+      {open && query.trim() && (
+        <div className="absolute z-20 mt-1 w-full bg-popover border border-border rounded-md shadow-lg max-h-64 overflow-auto">
+          {matches.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-muted-foreground">Nenhum produto encontrado. Preencha a descrição para item avulso.</div>
+          ) : matches.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => { onPick(p); setQuery(""); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-accent border-b border-border/40 last:border-b-0"
+            >
+              <div className="truncate">{p.name}{p.sku ? <span className="text-muted-foreground"> ({p.sku})</span> : null}</div>
+              {p.category && <div className="text-[10px] text-muted-foreground">{p.category}</div>}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
