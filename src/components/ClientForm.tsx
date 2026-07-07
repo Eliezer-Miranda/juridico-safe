@@ -1,5 +1,5 @@
-import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useForm, Controller, useWatch } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { db, type Client } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
-import { Save } from "lucide-react";
+import { Save, Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 type FormData = Omit<Client, "id" | "createdAt" | "updatedAt">;
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole = false }: Props) {
-  const { register, handleSubmit, control, reset, formState: { isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, control, reset, setValue, getValues, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
       type: "PJ",
       role: defaultRole,
@@ -31,9 +31,43 @@ export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole
     } as FormData,
   });
 
+  const type = useWatch({ control, name: "type" });
+  const document = useWatch({ control, name: "document" });
+  const [lookingUp, setLookingUp] = useState(false);
+
   useEffect(() => {
     if (initial) reset(initial as FormData);
   }, [initial?.id, reset]);
+
+  const lookupCNPJ = async () => {
+    const digits = (document ?? "").replace(/\D/g, "");
+    if (digits.length !== 14) return toast.error("Informe um CNPJ válido (14 dígitos).");
+    setLookingUp(true);
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${digits}`);
+      if (!res.ok) throw new Error("CNPJ não encontrado");
+      const d = await res.json();
+      const current = getValues();
+      setValue("name", d.razao_social ?? d.nome_fantasia ?? current.name, { shouldDirty: true });
+      if (d.data_inicio_atividade) setValue("birthDate", d.data_inicio_atividade, { shouldDirty: true });
+      if (d.email) setValue("email", d.email, { shouldDirty: true });
+      const ddd = d.ddd_telefone_1 ?? "";
+      if (ddd) setValue("phone", maskPhone(ddd), { shouldDirty: true });
+      setValue("address.zip", d.cep ? maskCEP(String(d.cep)) : current.address?.zip ?? "", { shouldDirty: true });
+      setValue("address.street", [d.descricao_tipo_de_logradouro, d.logradouro].filter(Boolean).join(" ").trim(), { shouldDirty: true });
+      setValue("address.number", d.numero ?? "", { shouldDirty: true });
+      setValue("address.complement", d.complemento ?? "", { shouldDirty: true });
+      setValue("address.neighborhood", d.bairro ?? "", { shouldDirty: true });
+      setValue("address.city", d.municipio ?? "", { shouldDirty: true });
+      setValue("address.state", d.uf ?? "", { shouldDirty: true });
+      toast.success("Dados do CNPJ preenchidos");
+    } catch (err) {
+      console.error(err);
+      toast.error("Não foi possível consultar o CNPJ.");
+    } finally {
+      setLookingUp(false);
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     if (!data.name?.trim()) return toast.error("Informe o nome / razão social.");
@@ -80,9 +114,16 @@ export function ClientForm({ initial, onSaved, defaultRole = "cliente", lockRole
               <Input {...register("name", { required: true })} />
             </Field>
             <Field label="CPF / CNPJ">
-              <Controller control={control} name="document" render={({ field }) => (
-                <Input {...field} onChange={(e) => field.onChange(maskCPFCNPJ(e.target.value))} />
-              )} />
+              <div className="flex gap-2">
+                <Controller control={control} name="document" render={({ field }) => (
+                  <Input {...field} onChange={(e) => field.onChange(maskCPFCNPJ(e.target.value))} />
+                )} />
+                {type === "PJ" && (
+                  <Button type="button" variant="outline" size="icon" onClick={lookupCNPJ} disabled={lookingUp} title="Buscar dados pelo CNPJ">
+                    {lookingUp ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  </Button>
+                )}
+              </div>
             </Field>
             <Field label="RG / IE"><Input {...register("rgIe")} /></Field>
             <Field label="Representante legal"><Input {...register("legalRep")} placeholder="Sócio ou responsável" /></Field>
