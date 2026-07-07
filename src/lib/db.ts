@@ -13,6 +13,7 @@ export interface Client {
   type: "PF" | "PJ";
   role?: PartyRole;
   name: string;
+  contactName?: string;
   document: string;
   rgIe?: string;
   birthDate?: string;
