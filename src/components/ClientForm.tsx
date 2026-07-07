@@ -1,5 +1,5 @@
-import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useForm, Controller, useWatch } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { db, type Client } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
-import { Save } from "lucide-react";
+import { Save, Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 type FormData = Omit<Client, "id" | "createdAt" | "updatedAt">;
