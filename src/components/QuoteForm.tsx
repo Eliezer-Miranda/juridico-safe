@@ -249,22 +249,21 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
             <div key={idx} className="grid grid-cols-12 gap-2 items-end border-b border-border/50 pb-3">
               <div className="col-span-12 md:col-span-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Produto (opcional)</Label>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Produto (opcional / avulso)</Label>
                   <button type="button" onClick={() => openNewProduct(idx)} className="text-[10px] text-gold hover:underline">
                     + Novo produto
                   </button>
                 </div>
-                <Select value={it.productId ? String(it.productId) : ""} onValueChange={(v) => pickProduct(idx, Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Buscar cadastro…" /></SelectTrigger>
-                  <SelectContent>
-                    {products.length === 0 && <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhum produto. Cadastre acima.</div>}
-                    {products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}{p.sku ? ` (${p.sku})` : ""}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <ProductSearch
+                  products={products}
+                  selectedId={it.productId}
+                  onPick={(p) => pickProduct(idx, p.id!)}
+                  onClear={() => setItem(idx, { productId: undefined })}
+                />
               </div>
               <div className="col-span-12 md:col-span-3">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Descrição</Label>
-                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value })} placeholder="Descrição do item" />
+                <Input value={it.description} onChange={(e) => setItem(idx, { description: e.target.value, productId: undefined })} placeholder="Item avulso ou descrição livre" />
               </div>
               <div className="col-span-3 md:col-span-1">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">Qtd</Label>
