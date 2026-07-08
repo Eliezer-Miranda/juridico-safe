@@ -55,6 +55,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
 
   // Quick-add product dialog
   const [prodOpen, setProdOpen] = useState(false);
+  const [condMgrOpen, setCondMgrOpen] = useState(false);
   const [prodItemIdx, setProdItemIdx] = useState<number | null>(null);
   const emptyProd: Omit<Product, "id"> = {
     sku: "", name: "", description: "", unit: "Un",
