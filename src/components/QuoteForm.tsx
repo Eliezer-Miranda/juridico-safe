@@ -309,7 +309,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-display text-xl">Faturamento</CardTitle>
-          <Link to="/cadastros/condicoes" className="text-xs text-gold hover:underline">Gerenciar condições</Link>
+          <Button size="sm" variant="outline" onClick={() => setCondMgrOpen(true)}>
+            <Settings2 className="h-3.5 w-3.5 mr-1" /> Gerenciar condições
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
