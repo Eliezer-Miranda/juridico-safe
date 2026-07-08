@@ -209,6 +209,17 @@ function SettingsPage() {
       </Card>
 
       <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Wallet className="h-4 w-4 text-gold" /> Formas de pagamento
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentMethodsManager />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card border-border">
 
         <CardHeader><CardTitle className="font-display flex items-center gap-2"><KeyRound className="h-4 w-4 text-gold" /> Senha de acesso</CardTitle></CardHeader>
         <CardContent className="space-y-4">
