@@ -381,6 +381,16 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={condMgrOpen} onOpenChange={setCondMgrOpen}>
+        <DialogContent className="bg-card max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display text-xl">Condições de pagamento</DialogTitle></DialogHeader>
+          <PaymentConditionsManager />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCondMgrOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
