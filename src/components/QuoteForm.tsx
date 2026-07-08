@@ -32,7 +32,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   const navigate = useNavigate();
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
   const products = useLiveQuery(() => db.products.orderBy("name").toArray()) ?? [];
-  const conditions = useLiveQuery(() => db.paymentConditions.toArray()) ?? [];
+  const conditions = useLiveQuery(
+    () => db.paymentConditions.orderBy("name").filter((c) => c.active !== false).toArray()
+  ) ?? [];
   const project = useLiveQuery(async () => projectId ? await db.projects.get(projectId) : null, [projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">(initial?.partyKind ?? "cliente");
