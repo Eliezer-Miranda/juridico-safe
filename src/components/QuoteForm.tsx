@@ -32,7 +32,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   const navigate = useNavigate();
   const clients = useLiveQuery(() => db.clients.orderBy("name").toArray()) ?? [];
   const products = useLiveQuery(() => db.products.orderBy("name").toArray()) ?? [];
-  const conditions = useLiveQuery(() => db.paymentConditions.toArray()) ?? [];
+  const conditions = useLiveQuery(
+    () => db.paymentConditions.orderBy("name").filter((c) => c.active !== false).toArray()
+  ) ?? [];
   const project = useLiveQuery(async () => projectId ? await db.projects.get(projectId) : null, [projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">(initial?.partyKind ?? "cliente");
@@ -313,7 +315,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
               <Select value={conditionId ? String(conditionId) : ""} onValueChange={(v) => applyCondition(Number(v))}>
                 <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
                 <SelectContent>
-                  {conditions.length === 0 && <div className="px-2 py-1.5 text-xs text-muted-foreground">Nenhuma condição cadastrada.</div>}
+                  {conditions.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">Nenhuma condição ativa. Cadastre em Configurações → Condições de pagamento.</div>}
                   {conditions.map((c: PaymentCondition) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
