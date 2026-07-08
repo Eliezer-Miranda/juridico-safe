@@ -127,6 +127,11 @@ export interface PaymentCondition {
   downPaymentPct?: number; active: boolean; createdAt: string;
 }
 
+export interface PaymentMethodItem {
+  id?: number; name: string; description?: string;
+  kind?: PaymentMethod; active: boolean; createdAt: string;
+}
+
 export interface Product {
   id?: number; sku?: string; name: string; description?: string;
   unit: string; price: number; cost?: number; category?: string;
@@ -156,6 +161,7 @@ class LegalDB extends Dexie {
   paymentConditions!: Table<PaymentCondition, number>;
   products!: Table<Product, number>;
   projects!: Table<Project, number>;
+  paymentMethods!: Table<PaymentMethodItem, number>;
 
   constructor() {
     super("legal-contracts-db");
@@ -203,6 +209,21 @@ class LegalDB extends Dexie {
       paymentConditions: "++id, name, active",
       products: "++id, sku, name, category, active",
       projects: "++id, code, name, clientId, status, type",
+    });
+    this.version(5).stores({
+      contracts: "++id, number, status, clientId, area, type, signedAt",
+      installments: "++id, contractId, status, dueDate",
+      clients: "++id, document, name, type, role",
+      settings: "id",
+      accounts: "++id, name, kind, archived",
+      finTx: "++id, kind, status, dueDate, accountId, category, partyId, quoteId, projectId",
+      investments: "++id, name, kind, ticker",
+      invMovements: "++id, investmentId, date, kind",
+      quotes: "++id, number, status, partyId, partyKind, issueDate, projectId",
+      paymentConditions: "++id, name, active",
+      products: "++id, sku, name, category, active",
+      projects: "++id, code, name, clientId, status, type",
+      paymentMethods: "++id, name, active",
     });
   }
 }

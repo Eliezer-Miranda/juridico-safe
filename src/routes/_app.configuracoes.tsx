@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { setPassword } from "@/lib/auth";
 import { maskCPFCNPJ, maskPhone, maskCEP } from "@/lib/format";
-import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2, CalendarClock } from "lucide-react";
+import { Download, Upload, Save, Building2, KeyRound, ShieldAlert, Image as ImageIcon, Trash2, CalendarClock, Wallet } from "lucide-react";
 import { PaymentConditionsManager } from "@/components/PaymentConditionsManager";
+import { PaymentMethodsManager } from "@/components/PaymentMethodsManager";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/configuracoes")({
@@ -76,6 +77,10 @@ function SettingsPage() {
       investments: await db.investments.toArray(),
       invMovements: await db.invMovements.toArray(),
       quotes: await db.quotes.toArray(),
+      paymentConditions: await db.paymentConditions.toArray(),
+      paymentMethods: await db.paymentMethods.toArray(),
+      products: await db.products.toArray(),
+      projects: await db.projects.toArray(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -99,6 +104,8 @@ function SettingsPage() {
         ["accounts", data.accounts], ["finTx", data.finTx],
         ["investments", data.investments], ["invMovements", data.invMovements],
         ["quotes", data.quotes],
+        ["paymentConditions", data.paymentConditions], ["paymentMethods", data.paymentMethods],
+        ["products", data.products], ["projects", data.projects],
       ];
       for (const [name, rows] of tables) if (rows?.length) await (db as any)[name].bulkAdd(rows);
     });
@@ -204,6 +211,17 @@ function SettingsPage() {
         </CardHeader>
         <CardContent>
           <PaymentConditionsManager />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Wallet className="h-4 w-4 text-gold" /> Formas de pagamento
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentMethodsManager />
         </CardContent>
       </Card>
 
