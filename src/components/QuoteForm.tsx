@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentConditionsManager } from "@/components/PaymentConditionsManager";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDays = (iso: string, n: number) => {
