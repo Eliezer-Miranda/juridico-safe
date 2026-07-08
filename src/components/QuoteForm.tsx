@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentConditionsManager } from "@/components/PaymentConditionsManager";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDays = (iso: string, n: number) => {
@@ -54,6 +55,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
 
   // Quick-add product dialog
   const [prodOpen, setProdOpen] = useState(false);
+  const [condMgrOpen, setCondMgrOpen] = useState(false);
   const [prodItemIdx, setProdItemIdx] = useState<number | null>(null);
   const emptyProd: Omit<Product, "id"> = {
     sku: "", name: "", description: "", unit: "Un",
@@ -307,7 +309,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-display text-xl">Faturamento</CardTitle>
-          <Link to="/cadastros/condicoes" className="text-xs text-gold hover:underline">Gerenciar condições</Link>
+          <Button size="sm" variant="outline" onClick={() => setCondMgrOpen(true)}>
+            <Settings2 className="h-3.5 w-3.5 mr-1" /> Gerenciar condições
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -374,6 +378,16 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
           <DialogFooter>
             <Button variant="ghost" onClick={() => setProdOpen(false)}>Cancelar</Button>
             <Button onClick={saveNewProduct} className="bg-gradient-gold text-primary-foreground">Cadastrar e usar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={condMgrOpen} onOpenChange={setCondMgrOpen}>
+        <DialogContent className="bg-card max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display text-xl">Condições de pagamento</DialogTitle></DialogHeader>
+          <PaymentConditionsManager />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCondMgrOpen(false)}>Fechar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
