@@ -77,6 +77,10 @@ function SettingsPage() {
       investments: await db.investments.toArray(),
       invMovements: await db.invMovements.toArray(),
       quotes: await db.quotes.toArray(),
+      paymentConditions: await db.paymentConditions.toArray(),
+      paymentMethods: await db.paymentMethods.toArray(),
+      products: await db.products.toArray(),
+      projects: await db.projects.toArray(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
