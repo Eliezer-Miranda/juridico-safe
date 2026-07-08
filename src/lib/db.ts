@@ -127,6 +127,11 @@ export interface PaymentCondition {
   downPaymentPct?: number; active: boolean; createdAt: string;
 }
 
+export interface PaymentMethodItem {
+  id?: number; name: string; description?: string;
+  kind?: PaymentMethod; active: boolean; createdAt: string;
+}
+
 export interface Product {
   id?: number; sku?: string; name: string; description?: string;
   unit: string; price: number; cost?: number; category?: string;
