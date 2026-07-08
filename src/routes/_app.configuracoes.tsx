@@ -104,6 +104,8 @@ function SettingsPage() {
         ["accounts", data.accounts], ["finTx", data.finTx],
         ["investments", data.investments], ["invMovements", data.invMovements],
         ["quotes", data.quotes],
+        ["paymentConditions", data.paymentConditions], ["paymentMethods", data.paymentMethods],
+        ["products", data.products], ["projects", data.projects],
       ];
       for (const [name, rows] of tables) if (rows?.length) await (db as any)[name].bulkAdd(rows);
     });
