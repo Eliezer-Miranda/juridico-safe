@@ -36,6 +36,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   const conditions = useLiveQuery(
     () => db.paymentConditions.orderBy("name").filter((c) => c.active !== false).toArray()
   ) ?? [];
+  const methods = useLiveQuery(
+    () => db.paymentMethods.orderBy("name").filter((m) => m.active !== false).toArray()
+  ) ?? [];
   const project = useLiveQuery(async () => projectId ? await db.projects.get(projectId) : null, [projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">(initial?.partyKind ?? "cliente");
@@ -48,6 +51,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   ]);
   const [discount, setDiscount] = useState(initial?.discount ?? 0);
   const [conditionId, setConditionId] = useState<number | "">(initial?.paymentConditionId ?? "");
+  const [methodId, setMethodId] = useState<number | "">(initial?.paymentMethodId ?? "");
   const [paymentMode, setPaymentMode] = useState<"avista" | "parcelado">(initial?.paymentMode ?? "avista");
   const [installmentsCount, setInstallmentsCount] = useState(initial?.installmentsCount ?? 1);
   const [firstDueDate, setFirstDueDate] = useState(initial?.firstDueDate ?? addDays(todayISO(), 30));
@@ -146,6 +150,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
         installmentsCount: paymentMode === "avista" ? 1 : Math.max(1, installmentsCount),
         firstDueDate,
         paymentConditionId: conditionId ? Number(conditionId) : undefined,
+        paymentMethodId: methodId ? Number(methodId) : undefined,
         updatedAt: now,
       };
       await db.quotes.update(initial.id, patch);
@@ -163,6 +168,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
       installmentsCount: paymentMode === "avista" ? 1 : Math.max(1, installmentsCount),
       firstDueDate,
       paymentConditionId: conditionId ? Number(conditionId) : undefined,
+      paymentMethodId: methodId ? Number(methodId) : undefined,
       projectId,
       createdAt: now, updatedAt: now,
     };
@@ -314,7 +320,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Condição cadastrada">
               <Select value={conditionId ? String(conditionId) : ""} onValueChange={(v) => applyCondition(Number(v))}>
                 <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
@@ -325,6 +331,15 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
               </Select>
             </Field>
             <Field label="Forma de pagamento">
+              <Select value={methodId ? String(methodId) : ""} onValueChange={(v) => setMethodId(Number(v))}>
+                <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+                <SelectContent>
+                  {methods.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">Nenhuma forma cadastrada. Cadastre em Configurações → Formas de pagamento.</div>}
+                  {methods.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Modalidade">
               <Select value={paymentMode} onValueChange={(v) => setPaymentMode(v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
