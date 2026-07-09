@@ -114,7 +114,7 @@ export interface Quote {
   items: QuoteItem[]; discount: number; total: number; notes?: string;
   status: QuoteStatus; paymentMode: "avista" | "parcelado";
   installmentsCount: number; firstDueDate?: string;
-  paymentConditionId?: number; projectId?: number;
+  paymentConditionId?: number; paymentMethodId?: number; projectId?: number;
   linkedTxIds?: number[];
   acceptedAt?: string; acceptedBy?: string;
   history?: HistoryEntry[];
