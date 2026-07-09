@@ -51,6 +51,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   ]);
   const [discount, setDiscount] = useState(initial?.discount ?? 0);
   const [conditionId, setConditionId] = useState<number | "">(initial?.paymentConditionId ?? "");
+  const [methodId, setMethodId] = useState<number | "">(initial?.paymentMethodId ?? "");
   const [paymentMode, setPaymentMode] = useState<"avista" | "parcelado">(initial?.paymentMode ?? "avista");
   const [installmentsCount, setInstallmentsCount] = useState(initial?.installmentsCount ?? 1);
   const [firstDueDate, setFirstDueDate] = useState(initial?.firstDueDate ?? addDays(todayISO(), 30));
