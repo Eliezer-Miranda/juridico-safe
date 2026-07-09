@@ -150,6 +150,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
         installmentsCount: paymentMode === "avista" ? 1 : Math.max(1, installmentsCount),
         firstDueDate,
         paymentConditionId: conditionId ? Number(conditionId) : undefined,
+        paymentMethodId: methodId ? Number(methodId) : undefined,
         updatedAt: now,
       };
       await db.quotes.update(initial.id, patch);
