@@ -36,6 +36,9 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
   const conditions = useLiveQuery(
     () => db.paymentConditions.orderBy("name").filter((c) => c.active !== false).toArray()
   ) ?? [];
+  const methods = useLiveQuery(
+    () => db.paymentMethods.orderBy("name").filter((m) => m.active !== false).toArray()
+  ) ?? [];
   const project = useLiveQuery(async () => projectId ? await db.projects.get(projectId) : null, [projectId]);
 
   const [partyKind, setPartyKind] = useState<"cliente" | "fornecedor">(initial?.partyKind ?? "cliente");
