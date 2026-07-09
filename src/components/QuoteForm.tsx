@@ -320,7 +320,7 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Condição cadastrada">
               <Select value={conditionId ? String(conditionId) : ""} onValueChange={(v) => applyCondition(Number(v))}>
                 <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
@@ -331,6 +331,15 @@ export function QuoteForm({ mode, initial, projectId, defaultSeller, defaultNote
               </Select>
             </Field>
             <Field label="Forma de pagamento">
+              <Select value={methodId ? String(methodId) : ""} onValueChange={(v) => setMethodId(Number(v))}>
+                <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+                <SelectContent>
+                  {methods.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">Nenhuma forma cadastrada. Cadastre em Configurações → Formas de pagamento.</div>}
+                  {methods.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Modalidade">
               <Select value={paymentMode} onValueChange={(v) => setPaymentMode(v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
