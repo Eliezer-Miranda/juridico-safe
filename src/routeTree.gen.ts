@@ -40,6 +40,7 @@ import { Route as AppCadastrosCondicoesRouteImport } from './routes/_app.cadastr
 import { Route as AppOrcamentosIdIndexRouteImport } from './routes/_app.orcamentos.$id.index'
 import { Route as AppEstoqueNotasIndexRouteImport } from './routes/_app.estoque.notas.index'
 import { Route as AppOrcamentosIdEditarRouteImport } from './routes/_app.orcamentos.$id.editar'
+import { Route as AppEstoqueNotasNovaRouteImport } from './routes/_app.estoque.notas.nova'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -196,6 +197,11 @@ const AppOrcamentosIdEditarRoute = AppOrcamentosIdEditarRouteImport.update({
   path: '/orcamentos/$id/editar',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEstoqueNotasNovaRoute = AppEstoqueNotasNovaRouteImport.update({
+  id: '/notas/nova',
+  path: '/notas/nova',
+  getParentRoute: () => AppEstoqueRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/fornecedores/': typeof AppFornecedoresIndexRoute
   '/orcamentos/': typeof AppOrcamentosIndexRoute
   '/projetos/': typeof AppProjetosIndexRoute
+  '/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
   '/estoque/notas/': typeof AppEstoqueNotasIndexRoute
   '/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/fornecedores': typeof AppFornecedoresIndexRoute
   '/orcamentos': typeof AppOrcamentosIndexRoute
   '/projetos': typeof AppProjetosIndexRoute
+  '/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
   '/estoque/notas': typeof AppEstoqueNotasIndexRoute
   '/orcamentos/$id': typeof AppOrcamentosIdIndexRoute
@@ -288,6 +296,7 @@ export interface FileRoutesById {
   '/_app/fornecedores/': typeof AppFornecedoresIndexRoute
   '/_app/orcamentos/': typeof AppOrcamentosIndexRoute
   '/_app/projetos/': typeof AppProjetosIndexRoute
+  '/_app/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/_app/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
   '/_app/estoque/notas/': typeof AppEstoqueNotasIndexRoute
   '/_app/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/fornecedores/'
     | '/orcamentos/'
     | '/projetos/'
+    | '/estoque/notas/nova'
     | '/orcamentos/$id/editar'
     | '/estoque/notas/'
     | '/orcamentos/$id/'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/orcamentos'
     | '/projetos'
+    | '/estoque/notas/nova'
     | '/orcamentos/$id/editar'
     | '/estoque/notas'
     | '/orcamentos/$id'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/_app/fornecedores/'
     | '/_app/orcamentos/'
     | '/_app/projetos/'
+    | '/_app/estoque/notas/nova'
     | '/_app/orcamentos/$id/editar'
     | '/_app/estoque/notas/'
     | '/_app/orcamentos/$id/'
@@ -613,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrcamentosIdEditarRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/estoque/notas/nova': {
+      id: '/_app/estoque/notas/nova'
+      path: '/notas/nova'
+      fullPath: '/estoque/notas/nova'
+      preLoaderRoute: typeof AppEstoqueNotasNovaRouteImport
+      parentRoute: typeof AppEstoqueRoute
+    }
   }
 }
 
@@ -633,10 +652,12 @@ const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
 )
 
 interface AppEstoqueRouteChildren {
+  AppEstoqueNotasNovaRoute: typeof AppEstoqueNotasNovaRoute
   AppEstoqueNotasIndexRoute: typeof AppEstoqueNotasIndexRoute
 }
 
 const AppEstoqueRouteChildren: AppEstoqueRouteChildren = {
+  AppEstoqueNotasNovaRoute: AppEstoqueNotasNovaRoute,
   AppEstoqueNotasIndexRoute: AppEstoqueNotasIndexRoute,
 }
 
