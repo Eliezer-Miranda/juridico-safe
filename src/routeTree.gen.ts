@@ -21,6 +21,7 @@ import { Route as AppProjetosIndexRouteImport } from './routes/_app.projetos.ind
 import { Route as AppOrcamentosIndexRouteImport } from './routes/_app.orcamentos.index'
 import { Route as AppFornecedoresIndexRouteImport } from './routes/_app.fornecedores.index'
 import { Route as AppFinanceiroIndexRouteImport } from './routes/_app.financeiro.index'
+import { Route as AppEstoqueIndexRouteImport } from './routes/_app.estoque.index'
 import { Route as AppContratosIndexRouteImport } from './routes/_app.contratos.index'
 import { Route as AppClientesIndexRouteImport } from './routes/_app.clientes.index'
 import { Route as AppProjetosNovoRouteImport } from './routes/_app.projetos.novo'
@@ -101,6 +102,11 @@ const AppFinanceiroIndexRoute = AppFinanceiroIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppFinanceiroRoute,
+} as any)
+const AppEstoqueIndexRoute = AppEstoqueIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppEstoqueRoute,
 } as any)
 const AppContratosIndexRoute = AppContratosIndexRouteImport.update({
   id: '/contratos/',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/projetos/novo': typeof AppProjetosNovoRoute
   '/clientes/': typeof AppClientesIndexRoute
   '/contratos/': typeof AppContratosIndexRoute
+  '/estoque/': typeof AppEstoqueIndexRoute
   '/financeiro/': typeof AppFinanceiroIndexRoute
   '/fornecedores/': typeof AppFornecedoresIndexRoute
   '/orcamentos/': typeof AppOrcamentosIndexRoute
@@ -246,7 +253,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/configuracoes': typeof AppConfiguracoesRoute
-  '/estoque': typeof AppEstoqueRouteWithChildren
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -265,6 +271,7 @@ export interface FileRoutesByTo {
   '/projetos/novo': typeof AppProjetosNovoRoute
   '/clientes': typeof AppClientesIndexRoute
   '/contratos': typeof AppContratosIndexRoute
+  '/estoque': typeof AppEstoqueIndexRoute
   '/financeiro': typeof AppFinanceiroIndexRoute
   '/fornecedores': typeof AppFornecedoresIndexRoute
   '/orcamentos': typeof AppOrcamentosIndexRoute
@@ -301,6 +308,7 @@ export interface FileRoutesById {
   '/_app/projetos/novo': typeof AppProjetosNovoRoute
   '/_app/clientes/': typeof AppClientesIndexRoute
   '/_app/contratos/': typeof AppContratosIndexRoute
+  '/_app/estoque/': typeof AppEstoqueIndexRoute
   '/_app/financeiro/': typeof AppFinanceiroIndexRoute
   '/_app/fornecedores/': typeof AppFornecedoresIndexRoute
   '/_app/orcamentos/': typeof AppOrcamentosIndexRoute
@@ -337,6 +345,7 @@ export interface FileRouteTypes {
     | '/projetos/novo'
     | '/clientes/'
     | '/contratos/'
+    | '/estoque/'
     | '/financeiro/'
     | '/fornecedores/'
     | '/orcamentos/'
@@ -349,7 +358,6 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/configuracoes'
-    | '/estoque'
     | '/'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
@@ -368,6 +376,7 @@ export interface FileRouteTypes {
     | '/projetos/novo'
     | '/clientes'
     | '/contratos'
+    | '/estoque'
     | '/financeiro'
     | '/fornecedores'
     | '/orcamentos'
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/_app/projetos/novo'
     | '/_app/clientes/'
     | '/_app/contratos/'
+    | '/_app/estoque/'
     | '/_app/financeiro/'
     | '/_app/fornecedores/'
     | '/_app/orcamentos/'
@@ -503,6 +513,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/financeiro/'
       preLoaderRoute: typeof AppFinanceiroIndexRouteImport
       parentRoute: typeof AppFinanceiroRoute
+    }
+    '/_app/estoque/': {
+      id: '/_app/estoque/'
+      path: '/'
+      fullPath: '/estoque/'
+      preLoaderRoute: typeof AppEstoqueIndexRouteImport
+      parentRoute: typeof AppEstoqueRoute
     }
     '/_app/contratos/': {
       id: '/_app/contratos/'
@@ -672,12 +689,14 @@ const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
 
 interface AppEstoqueRouteChildren {
   AppEstoqueEmissaoRoute: typeof AppEstoqueEmissaoRoute
+  AppEstoqueIndexRoute: typeof AppEstoqueIndexRoute
   AppEstoqueNotasNovaRoute: typeof AppEstoqueNotasNovaRoute
   AppEstoqueNotasIndexRoute: typeof AppEstoqueNotasIndexRoute
 }
 
 const AppEstoqueRouteChildren: AppEstoqueRouteChildren = {
   AppEstoqueEmissaoRoute: AppEstoqueEmissaoRoute,
+  AppEstoqueIndexRoute: AppEstoqueIndexRoute,
   AppEstoqueNotasNovaRoute: AppEstoqueNotasNovaRoute,
   AppEstoqueNotasIndexRoute: AppEstoqueNotasIndexRoute,
 }
