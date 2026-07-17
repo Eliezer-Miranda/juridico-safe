@@ -135,7 +135,44 @@ export interface PaymentMethodItem {
 export interface Product {
   id?: number; sku?: string; name: string; description?: string;
   unit: string; price: number; cost?: number; category?: string;
+  ncm?: string; stock?: number;
   active: boolean; createdAt: string; updatedAt: string;
+}
+
+export interface StockEntryItem {
+  productId?: number; description: string; ncm?: string;
+  unit: string; quantity: number; unitPrice: number; total: number;
+}
+export interface StockEntry {
+  id?: number; number: string; series?: string;
+  supplierId?: number; supplierName?: string; supplierDocument?: string;
+  issueDate: string; total: number;
+  items: StockEntryItem[];
+  xmlName?: string; xmlKey?: string;
+  notes?: string; createdAt: string;
+}
+
+export type StockMovKind = "entrada" | "saida" | "ajuste";
+export interface StockMovement {
+  id?: number; productId: number; kind: StockMovKind;
+  quantity: number; date: string;
+  refType?: "entrada" | "emissao" | "manual"; refId?: number;
+  notes?: string;
+}
+
+export type FiscalEmissionStatus = "pendente" | "emitida" | "cancelada";
+export interface FiscalEmissionItem {
+  productId?: number; description: string; ncm?: string;
+  unit: string; quantity: number; unitPrice: number; total: number;
+}
+export interface FiscalEmission {
+  id?: number; createdAt: string;
+  partyId?: number; partyName?: string;
+  quoteId?: number; projectId?: number;
+  items: FiscalEmissionItem[]; total: number;
+  status: FiscalEmissionStatus;
+  emittedAt?: string; nfNumber?: string; nfKey?: string;
+  notes?: string;
 }
 
 export type ProjectType = "material" | "maoDeObra" | "misto";
