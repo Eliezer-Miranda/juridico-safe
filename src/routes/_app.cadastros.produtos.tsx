@@ -90,7 +90,9 @@ function ProductsPage() {
               <tr>
                 <th className="text-left px-4 py-3">SKU</th>
                 <th className="text-left px-4 py-3">Nome</th>
+                <th className="text-left px-4 py-3">NCM/SH</th>
                 <th className="text-left px-4 py-3">Categoria</th>
+                <th className="text-right px-4 py-3">Estoque</th>
                 <th className="text-right px-4 py-3">Custo</th>
                 <th className="text-right px-4 py-3">Preço</th>
                 <th className="text-left px-4 py-3">Un.</th>
@@ -105,7 +107,9 @@ function ProductsPage() {
                     <p className="font-medium">{p.name}</p>
                     {p.description && <p className="text-xs text-muted-foreground line-clamp-1">{p.description}</p>}
                   </td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.ncm || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
+                  <td className={`px-4 py-3 text-right font-medium ${(p.stock ?? 0) < 0 ? "text-destructive" : ""}`}>{p.stock ?? 0}</td>
                   <td className="px-4 py-3 text-right text-muted-foreground">{p.cost ? formatBRL(p.cost) : "—"}</td>
                   <td className="px-4 py-3 text-right font-medium">{formatBRL(p.price)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.unit}</td>
