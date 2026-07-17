@@ -31,6 +31,7 @@ import { Route as AppFinanceiroReceberRouteImport } from './routes/_app.financei
 import { Route as AppFinanceiroPagarRouteImport } from './routes/_app.financeiro.pagar'
 import { Route as AppFinanceiroInvestimentosRouteImport } from './routes/_app.financeiro.investimentos'
 import { Route as AppFinanceiroContasRouteImport } from './routes/_app.financeiro.contas'
+import { Route as AppEstoqueEmissaoRouteImport } from './routes/_app.estoque.emissao'
 import { Route as AppContratosNovoRouteImport } from './routes/_app.contratos.novo'
 import { Route as AppContratosIdRouteImport } from './routes/_app.contratos.$id'
 import { Route as AppClientesNovoRouteImport } from './routes/_app.clientes.novo'
@@ -152,6 +153,11 @@ const AppFinanceiroContasRoute = AppFinanceiroContasRouteImport.update({
   path: '/contas',
   getParentRoute: () => AppFinanceiroRoute,
 } as any)
+const AppEstoqueEmissaoRoute = AppEstoqueEmissaoRouteImport.update({
+  id: '/emissao',
+  path: '/emissao',
+  getParentRoute: () => AppEstoqueRoute,
+} as any)
 const AppContratosNovoRoute = AppContratosNovoRouteImport.update({
   id: '/contratos/novo',
   path: '/contratos/novo',
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/clientes/novo': typeof AppClientesNovoRoute
   '/contratos/$id': typeof AppContratosIdRoute
   '/contratos/novo': typeof AppContratosNovoRoute
+  '/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/financeiro/contas': typeof AppFinanceiroContasRoute
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/clientes/novo': typeof AppClientesNovoRoute
   '/contratos/$id': typeof AppContratosIdRoute
   '/contratos/novo': typeof AppContratosNovoRoute
+  '/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/financeiro/contas': typeof AppFinanceiroContasRoute
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/_app/clientes/novo': typeof AppClientesNovoRoute
   '/_app/contratos/$id': typeof AppContratosIdRoute
   '/_app/contratos/novo': typeof AppContratosNovoRoute
+  '/_app/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/_app/financeiro/contas': typeof AppFinanceiroContasRoute
   '/_app/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/_app/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/clientes/novo'
     | '/contratos/$id'
     | '/contratos/novo'
+    | '/estoque/emissao'
     | '/financeiro/contas'
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/clientes/novo'
     | '/contratos/$id'
     | '/contratos/novo'
+    | '/estoque/emissao'
     | '/financeiro/contas'
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/_app/clientes/novo'
     | '/_app/contratos/$id'
     | '/_app/contratos/novo'
+    | '/_app/estoque/emissao'
     | '/_app/financeiro/contas'
     | '/_app/financeiro/investimentos'
     | '/_app/financeiro/pagar'
@@ -562,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinanceiroContasRouteImport
       parentRoute: typeof AppFinanceiroRoute
     }
+    '/_app/estoque/emissao': {
+      id: '/_app/estoque/emissao'
+      path: '/emissao'
+      fullPath: '/estoque/emissao'
+      preLoaderRoute: typeof AppEstoqueEmissaoRouteImport
+      parentRoute: typeof AppEstoqueRoute
+    }
     '/_app/contratos/novo': {
       id: '/_app/contratos/novo'
       path: '/contratos/novo'
@@ -652,11 +671,13 @@ const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
 )
 
 interface AppEstoqueRouteChildren {
+  AppEstoqueEmissaoRoute: typeof AppEstoqueEmissaoRoute
   AppEstoqueNotasNovaRoute: typeof AppEstoqueNotasNovaRoute
   AppEstoqueNotasIndexRoute: typeof AppEstoqueNotasIndexRoute
 }
 
 const AppEstoqueRouteChildren: AppEstoqueRouteChildren = {
+  AppEstoqueEmissaoRoute: AppEstoqueEmissaoRoute,
   AppEstoqueNotasNovaRoute: AppEstoqueNotasNovaRoute,
   AppEstoqueNotasIndexRoute: AppEstoqueNotasIndexRoute,
 }
