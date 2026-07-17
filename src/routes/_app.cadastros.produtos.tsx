@@ -133,6 +133,8 @@ function ProductsPage() {
             <div className="md:col-span-2"><Field label="Nome"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field></div>
             <div className="md:col-span-2"><Field label="Descrição"><Textarea rows={2} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field></div>
             <Field label="Unidade"><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} placeholder="Un, kg, m, h…" /></Field>
+            <Field label="NCM / SH"><Input value={form.ncm ?? ""} onChange={(e) => setForm({ ...form, ncm: e.target.value })} placeholder="00000000" /></Field>
+            <Field label="Estoque atual"><Input type="number" step="0.001" value={form.stock ?? 0} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
             <Field label="Custo (R$)"><Input type="number" step="0.01" value={form.cost ?? 0} onChange={(e) => setForm({ ...form, cost: Number(e.target.value) })} /></Field>
             <Field label="Preço de venda (R$)"><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
             <Field label="Ativo">
