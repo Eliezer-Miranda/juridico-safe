@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Banknote, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings as SettingsIcon, LogOut, Banknote, Plus, Wallet, ArrowDownToLine, ArrowUpFromLine, Landmark, LineChart, FileSpreadsheet, FolderKanban, Package, CalendarClock, Briefcase, PackagePlus, FileOutput } from "lucide-react";
 import { DueAlerts } from "./DueAlerts";
 import { useAuth } from "./AuthProvider";
 import { db } from "@/lib/db";
@@ -15,6 +15,9 @@ const nav = [
   { to: "/projetos", label: "Projetos", icon: FolderKanban },
   { group: "Cadastros" },
   { to: "/cadastros/produtos", label: "Produtos & Serviços", icon: Package },
+  { group: "Estoque & Fiscal" },
+  { to: "/estoque/notas", label: "Notas de Entrada", icon: PackagePlus },
+  { to: "/estoque/emissao", label: "Fila NF-e Saída", icon: FileOutput },
   { group: "Financeiro" },
   { to: "/financeiro", label: "Visão geral", icon: Wallet, exact: true },
   { to: "/financeiro/receber", label: "A receber", icon: ArrowDownToLine },

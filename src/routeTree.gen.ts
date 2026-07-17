@@ -14,12 +14,14 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppFornecedoresRouteImport } from './routes/_app.fornecedores'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
+import { Route as AppEstoqueRouteImport } from './routes/_app.estoque'
 import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoes'
 import { Route as AppClientesRouteImport } from './routes/_app.clientes'
 import { Route as AppProjetosIndexRouteImport } from './routes/_app.projetos.index'
 import { Route as AppOrcamentosIndexRouteImport } from './routes/_app.orcamentos.index'
 import { Route as AppFornecedoresIndexRouteImport } from './routes/_app.fornecedores.index'
 import { Route as AppFinanceiroIndexRouteImport } from './routes/_app.financeiro.index'
+import { Route as AppEstoqueIndexRouteImport } from './routes/_app.estoque.index'
 import { Route as AppContratosIndexRouteImport } from './routes/_app.contratos.index'
 import { Route as AppClientesIndexRouteImport } from './routes/_app.clientes.index'
 import { Route as AppProjetosNovoRouteImport } from './routes/_app.projetos.novo'
@@ -30,6 +32,7 @@ import { Route as AppFinanceiroReceberRouteImport } from './routes/_app.financei
 import { Route as AppFinanceiroPagarRouteImport } from './routes/_app.financeiro.pagar'
 import { Route as AppFinanceiroInvestimentosRouteImport } from './routes/_app.financeiro.investimentos'
 import { Route as AppFinanceiroContasRouteImport } from './routes/_app.financeiro.contas'
+import { Route as AppEstoqueEmissaoRouteImport } from './routes/_app.estoque.emissao'
 import { Route as AppContratosNovoRouteImport } from './routes/_app.contratos.novo'
 import { Route as AppContratosIdRouteImport } from './routes/_app.contratos.$id'
 import { Route as AppClientesNovoRouteImport } from './routes/_app.clientes.novo'
@@ -37,7 +40,9 @@ import { Route as AppClientesIdRouteImport } from './routes/_app.clientes.$id'
 import { Route as AppCadastrosProdutosRouteImport } from './routes/_app.cadastros.produtos'
 import { Route as AppCadastrosCondicoesRouteImport } from './routes/_app.cadastros.condicoes'
 import { Route as AppOrcamentosIdIndexRouteImport } from './routes/_app.orcamentos.$id.index'
+import { Route as AppEstoqueNotasIndexRouteImport } from './routes/_app.estoque.notas.index'
 import { Route as AppOrcamentosIdEditarRouteImport } from './routes/_app.orcamentos.$id.editar'
+import { Route as AppEstoqueNotasNovaRouteImport } from './routes/_app.estoque.notas.nova'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -61,6 +66,11 @@ const AppFornecedoresRoute = AppFornecedoresRouteImport.update({
 const AppFinanceiroRoute = AppFinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEstoqueRoute = AppEstoqueRouteImport.update({
+  id: '/estoque',
+  path: '/estoque',
   getParentRoute: () => AppRoute,
 } as any)
 const AppConfiguracoesRoute = AppConfiguracoesRouteImport.update({
@@ -92,6 +102,11 @@ const AppFinanceiroIndexRoute = AppFinanceiroIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppFinanceiroRoute,
+} as any)
+const AppEstoqueIndexRoute = AppEstoqueIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppEstoqueRoute,
 } as any)
 const AppContratosIndexRoute = AppContratosIndexRouteImport.update({
   id: '/contratos/',
@@ -144,6 +159,11 @@ const AppFinanceiroContasRoute = AppFinanceiroContasRouteImport.update({
   path: '/contas',
   getParentRoute: () => AppFinanceiroRoute,
 } as any)
+const AppEstoqueEmissaoRoute = AppEstoqueEmissaoRouteImport.update({
+  id: '/emissao',
+  path: '/emissao',
+  getParentRoute: () => AppEstoqueRoute,
+} as any)
 const AppContratosNovoRoute = AppContratosNovoRouteImport.update({
   id: '/contratos/novo',
   path: '/contratos/novo',
@@ -179,10 +199,20 @@ const AppOrcamentosIdIndexRoute = AppOrcamentosIdIndexRouteImport.update({
   path: '/orcamentos/$id/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEstoqueNotasIndexRoute = AppEstoqueNotasIndexRouteImport.update({
+  id: '/notas/',
+  path: '/notas/',
+  getParentRoute: () => AppEstoqueRoute,
+} as any)
 const AppOrcamentosIdEditarRoute = AppOrcamentosIdEditarRouteImport.update({
   id: '/orcamentos/$id/editar',
   path: '/orcamentos/$id/editar',
   getParentRoute: () => AppRoute,
+} as any)
+const AppEstoqueNotasNovaRoute = AppEstoqueNotasNovaRouteImport.update({
+  id: '/notas/nova',
+  path: '/notas/nova',
+  getParentRoute: () => AppEstoqueRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -190,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
+  '/estoque': typeof AppEstoqueRouteWithChildren
   '/financeiro': typeof AppFinanceiroRouteWithChildren
   '/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
@@ -198,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/clientes/novo': typeof AppClientesNovoRoute
   '/contratos/$id': typeof AppContratosIdRoute
   '/contratos/novo': typeof AppContratosNovoRoute
+  '/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/financeiro/contas': typeof AppFinanceiroContasRoute
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -208,11 +240,14 @@ export interface FileRoutesByFullPath {
   '/projetos/novo': typeof AppProjetosNovoRoute
   '/clientes/': typeof AppClientesIndexRoute
   '/contratos/': typeof AppContratosIndexRoute
+  '/estoque/': typeof AppEstoqueIndexRoute
   '/financeiro/': typeof AppFinanceiroIndexRoute
   '/fornecedores/': typeof AppFornecedoresIndexRoute
   '/orcamentos/': typeof AppOrcamentosIndexRoute
   '/projetos/': typeof AppProjetosIndexRoute
+  '/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/estoque/notas/': typeof AppEstoqueNotasIndexRoute
   '/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -225,6 +260,7 @@ export interface FileRoutesByTo {
   '/clientes/novo': typeof AppClientesNovoRoute
   '/contratos/$id': typeof AppContratosIdRoute
   '/contratos/novo': typeof AppContratosNovoRoute
+  '/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/financeiro/contas': typeof AppFinanceiroContasRoute
   '/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -235,11 +271,14 @@ export interface FileRoutesByTo {
   '/projetos/novo': typeof AppProjetosNovoRoute
   '/clientes': typeof AppClientesIndexRoute
   '/contratos': typeof AppContratosIndexRoute
+  '/estoque': typeof AppEstoqueIndexRoute
   '/financeiro': typeof AppFinanceiroIndexRoute
   '/fornecedores': typeof AppFornecedoresIndexRoute
   '/orcamentos': typeof AppOrcamentosIndexRoute
   '/projetos': typeof AppProjetosIndexRoute
+  '/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/estoque/notas': typeof AppEstoqueNotasIndexRoute
   '/orcamentos/$id': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRoutesById {
@@ -248,6 +287,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/clientes': typeof AppClientesRouteWithChildren
   '/_app/configuracoes': typeof AppConfiguracoesRoute
+  '/_app/estoque': typeof AppEstoqueRouteWithChildren
   '/_app/financeiro': typeof AppFinanceiroRouteWithChildren
   '/_app/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/_app/': typeof AppIndexRoute
@@ -257,6 +297,7 @@ export interface FileRoutesById {
   '/_app/clientes/novo': typeof AppClientesNovoRoute
   '/_app/contratos/$id': typeof AppContratosIdRoute
   '/_app/contratos/novo': typeof AppContratosNovoRoute
+  '/_app/estoque/emissao': typeof AppEstoqueEmissaoRoute
   '/_app/financeiro/contas': typeof AppFinanceiroContasRoute
   '/_app/financeiro/investimentos': typeof AppFinanceiroInvestimentosRoute
   '/_app/financeiro/pagar': typeof AppFinanceiroPagarRoute
@@ -267,11 +308,14 @@ export interface FileRoutesById {
   '/_app/projetos/novo': typeof AppProjetosNovoRoute
   '/_app/clientes/': typeof AppClientesIndexRoute
   '/_app/contratos/': typeof AppContratosIndexRoute
+  '/_app/estoque/': typeof AppEstoqueIndexRoute
   '/_app/financeiro/': typeof AppFinanceiroIndexRoute
   '/_app/fornecedores/': typeof AppFornecedoresIndexRoute
   '/_app/orcamentos/': typeof AppOrcamentosIndexRoute
   '/_app/projetos/': typeof AppProjetosIndexRoute
+  '/_app/estoque/notas/nova': typeof AppEstoqueNotasNovaRoute
   '/_app/orcamentos/$id/editar': typeof AppOrcamentosIdEditarRoute
+  '/_app/estoque/notas/': typeof AppEstoqueNotasIndexRoute
   '/_app/orcamentos/$id/': typeof AppOrcamentosIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -281,6 +325,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/clientes'
     | '/configuracoes'
+    | '/estoque'
     | '/financeiro'
     | '/fornecedores'
     | '/cadastros/condicoes'
@@ -289,6 +334,7 @@ export interface FileRouteTypes {
     | '/clientes/novo'
     | '/contratos/$id'
     | '/contratos/novo'
+    | '/estoque/emissao'
     | '/financeiro/contas'
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
@@ -299,11 +345,14 @@ export interface FileRouteTypes {
     | '/projetos/novo'
     | '/clientes/'
     | '/contratos/'
+    | '/estoque/'
     | '/financeiro/'
     | '/fornecedores/'
     | '/orcamentos/'
     | '/projetos/'
+    | '/estoque/notas/nova'
     | '/orcamentos/$id/editar'
+    | '/estoque/notas/'
     | '/orcamentos/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -316,6 +365,7 @@ export interface FileRouteTypes {
     | '/clientes/novo'
     | '/contratos/$id'
     | '/contratos/novo'
+    | '/estoque/emissao'
     | '/financeiro/contas'
     | '/financeiro/investimentos'
     | '/financeiro/pagar'
@@ -326,11 +376,14 @@ export interface FileRouteTypes {
     | '/projetos/novo'
     | '/clientes'
     | '/contratos'
+    | '/estoque'
     | '/financeiro'
     | '/fornecedores'
     | '/orcamentos'
     | '/projetos'
+    | '/estoque/notas/nova'
     | '/orcamentos/$id/editar'
+    | '/estoque/notas'
     | '/orcamentos/$id'
   id:
     | '__root__'
@@ -338,6 +391,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/clientes'
     | '/_app/configuracoes'
+    | '/_app/estoque'
     | '/_app/financeiro'
     | '/_app/fornecedores'
     | '/_app/'
@@ -347,6 +401,7 @@ export interface FileRouteTypes {
     | '/_app/clientes/novo'
     | '/_app/contratos/$id'
     | '/_app/contratos/novo'
+    | '/_app/estoque/emissao'
     | '/_app/financeiro/contas'
     | '/_app/financeiro/investimentos'
     | '/_app/financeiro/pagar'
@@ -357,11 +412,14 @@ export interface FileRouteTypes {
     | '/_app/projetos/novo'
     | '/_app/clientes/'
     | '/_app/contratos/'
+    | '/_app/estoque/'
     | '/_app/financeiro/'
     | '/_app/fornecedores/'
     | '/_app/orcamentos/'
     | '/_app/projetos/'
+    | '/_app/estoque/notas/nova'
     | '/_app/orcamentos/$id/editar'
+    | '/_app/estoque/notas/'
     | '/_app/orcamentos/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -407,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinanceiroRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/estoque': {
+      id: '/_app/estoque'
+      path: '/estoque'
+      fullPath: '/estoque'
+      preLoaderRoute: typeof AppEstoqueRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/configuracoes': {
       id: '/_app/configuracoes'
       path: '/configuracoes'
@@ -448,6 +513,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/financeiro/'
       preLoaderRoute: typeof AppFinanceiroIndexRouteImport
       parentRoute: typeof AppFinanceiroRoute
+    }
+    '/_app/estoque/': {
+      id: '/_app/estoque/'
+      path: '/'
+      fullPath: '/estoque/'
+      preLoaderRoute: typeof AppEstoqueIndexRouteImport
+      parentRoute: typeof AppEstoqueRoute
     }
     '/_app/contratos/': {
       id: '/_app/contratos/'
@@ -519,6 +591,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFinanceiroContasRouteImport
       parentRoute: typeof AppFinanceiroRoute
     }
+    '/_app/estoque/emissao': {
+      id: '/_app/estoque/emissao'
+      path: '/emissao'
+      fullPath: '/estoque/emissao'
+      preLoaderRoute: typeof AppEstoqueEmissaoRouteImport
+      parentRoute: typeof AppEstoqueRoute
+    }
     '/_app/contratos/novo': {
       id: '/_app/contratos/novo'
       path: '/contratos/novo'
@@ -568,12 +647,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrcamentosIdIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/estoque/notas/': {
+      id: '/_app/estoque/notas/'
+      path: '/notas'
+      fullPath: '/estoque/notas/'
+      preLoaderRoute: typeof AppEstoqueNotasIndexRouteImport
+      parentRoute: typeof AppEstoqueRoute
+    }
     '/_app/orcamentos/$id/editar': {
       id: '/_app/orcamentos/$id/editar'
       path: '/orcamentos/$id/editar'
       fullPath: '/orcamentos/$id/editar'
       preLoaderRoute: typeof AppOrcamentosIdEditarRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/estoque/notas/nova': {
+      id: '/_app/estoque/notas/nova'
+      path: '/notas/nova'
+      fullPath: '/estoque/notas/nova'
+      preLoaderRoute: typeof AppEstoqueNotasNovaRouteImport
+      parentRoute: typeof AppEstoqueRoute
     }
   }
 }
@@ -592,6 +685,24 @@ const AppClientesRouteChildren: AppClientesRouteChildren = {
 
 const AppClientesRouteWithChildren = AppClientesRoute._addFileChildren(
   AppClientesRouteChildren,
+)
+
+interface AppEstoqueRouteChildren {
+  AppEstoqueEmissaoRoute: typeof AppEstoqueEmissaoRoute
+  AppEstoqueIndexRoute: typeof AppEstoqueIndexRoute
+  AppEstoqueNotasNovaRoute: typeof AppEstoqueNotasNovaRoute
+  AppEstoqueNotasIndexRoute: typeof AppEstoqueNotasIndexRoute
+}
+
+const AppEstoqueRouteChildren: AppEstoqueRouteChildren = {
+  AppEstoqueEmissaoRoute: AppEstoqueEmissaoRoute,
+  AppEstoqueIndexRoute: AppEstoqueIndexRoute,
+  AppEstoqueNotasNovaRoute: AppEstoqueNotasNovaRoute,
+  AppEstoqueNotasIndexRoute: AppEstoqueNotasIndexRoute,
+}
+
+const AppEstoqueRouteWithChildren = AppEstoqueRoute._addFileChildren(
+  AppEstoqueRouteChildren,
 )
 
 interface AppFinanceiroRouteChildren {
@@ -631,6 +742,7 @@ const AppFornecedoresRouteWithChildren = AppFornecedoresRoute._addFileChildren(
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
+  AppEstoqueRoute: typeof AppEstoqueRouteWithChildren
   AppFinanceiroRoute: typeof AppFinanceiroRouteWithChildren
   AppFornecedoresRoute: typeof AppFornecedoresRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
@@ -651,6 +763,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRouteWithChildren,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
+  AppEstoqueRoute: AppEstoqueRouteWithChildren,
   AppFinanceiroRoute: AppFinanceiroRouteWithChildren,
   AppFornecedoresRoute: AppFornecedoresRouteWithChildren,
   AppIndexRoute: AppIndexRoute,

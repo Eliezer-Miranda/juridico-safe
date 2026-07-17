@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_app/cadastros/produtos")({
 
 const empty: Omit<Product, "id"> = {
   sku: "", name: "", description: "", unit: "Un",
-  price: 0, cost: 0, category: "", active: true,
+  price: 0, cost: 0, category: "", ncm: "", stock: 0, active: true,
   createdAt: "", updatedAt: "",
 };
 
@@ -90,7 +90,9 @@ function ProductsPage() {
               <tr>
                 <th className="text-left px-4 py-3">SKU</th>
                 <th className="text-left px-4 py-3">Nome</th>
+                <th className="text-left px-4 py-3">NCM/SH</th>
                 <th className="text-left px-4 py-3">Categoria</th>
+                <th className="text-right px-4 py-3">Estoque</th>
                 <th className="text-right px-4 py-3">Custo</th>
                 <th className="text-right px-4 py-3">Preço</th>
                 <th className="text-left px-4 py-3">Un.</th>
@@ -105,7 +107,9 @@ function ProductsPage() {
                     <p className="font-medium">{p.name}</p>
                     {p.description && <p className="text-xs text-muted-foreground line-clamp-1">{p.description}</p>}
                   </td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{p.ncm || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.category || "—"}</td>
+                  <td className={`px-4 py-3 text-right font-medium ${(p.stock ?? 0) < 0 ? "text-destructive" : ""}`}>{p.stock ?? 0}</td>
                   <td className="px-4 py-3 text-right text-muted-foreground">{p.cost ? formatBRL(p.cost) : "—"}</td>
                   <td className="px-4 py-3 text-right font-medium">{formatBRL(p.price)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.unit}</td>
@@ -129,6 +133,8 @@ function ProductsPage() {
             <div className="md:col-span-2"><Field label="Nome"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field></div>
             <div className="md:col-span-2"><Field label="Descrição"><Textarea rows={2} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field></div>
             <Field label="Unidade"><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} placeholder="Un, kg, m, h…" /></Field>
+            <Field label="NCM / SH"><Input value={form.ncm ?? ""} onChange={(e) => setForm({ ...form, ncm: e.target.value })} placeholder="00000000" /></Field>
+            <Field label="Estoque atual"><Input type="number" step="0.001" value={form.stock ?? 0} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
             <Field label="Custo (R$)"><Input type="number" step="0.01" value={form.cost ?? 0} onChange={(e) => setForm({ ...form, cost: Number(e.target.value) })} /></Field>
             <Field label="Preço de venda (R$)"><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
             <Field label="Ativo">
