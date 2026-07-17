@@ -199,6 +199,9 @@ class LegalDB extends Dexie {
   products!: Table<Product, number>;
   projects!: Table<Project, number>;
   paymentMethods!: Table<PaymentMethodItem, number>;
+  stockEntries!: Table<StockEntry, number>;
+  stockMovements!: Table<StockMovement, number>;
+  fiscalEmissions!: Table<FiscalEmission, number>;
 
   constructor() {
     super("legal-contracts-db");
