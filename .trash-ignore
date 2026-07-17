@@ -1,7 +1,0 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-
-export const Route = createFileRoute("/_app/estoque/notas/")({
-  // reuse the list at /estoque/notas — this file is now the actual list
-});
-
-// (This wrapper is unused; the concrete list lives in _app.estoque.notas.index.tsx)
