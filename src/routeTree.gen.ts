@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppFornecedoresRouteImport } from './routes/_app.fornecedores'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
+import { Route as AppEstoqueRouteImport } from './routes/_app.estoque'
 import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoes'
 import { Route as AppClientesRouteImport } from './routes/_app.clientes'
 import { Route as AppProjetosIndexRouteImport } from './routes/_app.projetos.index'
@@ -61,6 +62,11 @@ const AppFornecedoresRoute = AppFornecedoresRouteImport.update({
 const AppFinanceiroRoute = AppFinanceiroRouteImport.update({
   id: '/financeiro',
   path: '/financeiro',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEstoqueRoute = AppEstoqueRouteImport.update({
+  id: '/estoque',
+  path: '/estoque',
   getParentRoute: () => AppRoute,
 } as any)
 const AppConfiguracoesRoute = AppConfiguracoesRouteImport.update({
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/clientes': typeof AppClientesRouteWithChildren
   '/configuracoes': typeof AppConfiguracoesRoute
+  '/estoque': typeof AppEstoqueRoute
   '/financeiro': typeof AppFinanceiroRouteWithChildren
   '/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/configuracoes': typeof AppConfiguracoesRoute
+  '/estoque': typeof AppEstoqueRoute
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/clientes': typeof AppClientesRouteWithChildren
   '/_app/configuracoes': typeof AppConfiguracoesRoute
+  '/_app/estoque': typeof AppEstoqueRoute
   '/_app/financeiro': typeof AppFinanceiroRouteWithChildren
   '/_app/fornecedores': typeof AppFornecedoresRouteWithChildren
   '/_app/': typeof AppIndexRoute
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/clientes'
     | '/configuracoes'
+    | '/estoque'
     | '/financeiro'
     | '/fornecedores'
     | '/cadastros/condicoes'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/configuracoes'
+    | '/estoque'
     | '/'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/clientes'
     | '/_app/configuracoes'
+    | '/_app/estoque'
     | '/_app/financeiro'
     | '/_app/fornecedores'
     | '/_app/'
@@ -405,6 +417,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/financeiro'
       preLoaderRoute: typeof AppFinanceiroRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/estoque': {
+      id: '/_app/estoque'
+      path: '/estoque'
+      fullPath: '/estoque'
+      preLoaderRoute: typeof AppEstoqueRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/configuracoes': {
@@ -631,6 +650,7 @@ const AppFornecedoresRouteWithChildren = AppFornecedoresRoute._addFileChildren(
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRouteWithChildren
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
+  AppEstoqueRoute: typeof AppEstoqueRoute
   AppFinanceiroRoute: typeof AppFinanceiroRouteWithChildren
   AppFornecedoresRoute: typeof AppFornecedoresRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
@@ -651,6 +671,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRouteWithChildren,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
+  AppEstoqueRoute: AppEstoqueRoute,
   AppFinanceiroRoute: AppFinanceiroRouteWithChildren,
   AppFornecedoresRoute: AppFornecedoresRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
