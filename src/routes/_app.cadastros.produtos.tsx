@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_app/cadastros/produtos")({
 
 const empty: Omit<Product, "id"> = {
   sku: "", name: "", description: "", unit: "Un",
-  price: 0, cost: 0, category: "", active: true,
+  price: 0, cost: 0, category: "", ncm: "", stock: 0, active: true,
   createdAt: "", updatedAt: "",
 };
 
