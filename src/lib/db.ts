@@ -265,6 +265,24 @@ class LegalDB extends Dexie {
       projects: "++id, code, name, clientId, status, type",
       paymentMethods: "++id, name, active",
     });
+    this.version(6).stores({
+      contracts: "++id, number, status, clientId, area, type, signedAt",
+      installments: "++id, contractId, status, dueDate",
+      clients: "++id, document, name, type, role",
+      settings: "id",
+      accounts: "++id, name, kind, archived",
+      finTx: "++id, kind, status, dueDate, accountId, category, partyId, quoteId, projectId",
+      investments: "++id, name, kind, ticker",
+      invMovements: "++id, investmentId, date, kind",
+      quotes: "++id, number, status, partyId, partyKind, issueDate, projectId",
+      paymentConditions: "++id, name, active",
+      products: "++id, sku, name, category, active, ncm",
+      projects: "++id, code, name, clientId, status, type",
+      paymentMethods: "++id, name, active",
+      stockEntries: "++id, number, supplierId, issueDate, xmlKey",
+      stockMovements: "++id, productId, kind, date, refId",
+      fiscalEmissions: "++id, status, createdAt, partyId, quoteId, projectId",
+    });
   }
 }
 
