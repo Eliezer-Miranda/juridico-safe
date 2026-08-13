@@ -12,6 +12,7 @@ const nav = [
   { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/fornecedores", label: "Fornecedores", icon: Briefcase },
   { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
+  { to: "/propostas", label: "Proposta com IA", icon: Sparkles },
   { to: "/projetos", label: "Projetos", icon: FolderKanban },
   { group: "Cadastros" },
   { to: "/cadastros/produtos", label: "Produtos & Serviços", icon: Package },
@@ -101,7 +102,7 @@ export const AppShell = () => {
 
         <div className="p-3 border-t border-sidebar-border space-y-2">
           <Link
-            to="/orcamentos/novo"
+            to="/orcamentos/novo" search={{ projectId: undefined }}
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-md text-sm bg-gradient-gold text-primary-foreground font-medium shadow-gold hover:opacity-95 transition"
           >
             <Plus className="h-4 w-4" /> Novo orçamento

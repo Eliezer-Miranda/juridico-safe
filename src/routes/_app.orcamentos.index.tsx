@@ -48,7 +48,7 @@ function QuotesIndex() {
             {quotes.length} orçamento{quotes.length !== 1 ? "s" : ""} · gere parcelas em contas a receber/pagar.
           </p>
         </div>
-        <Button onClick={() => navigate({ to: "/orcamentos/novo" })} className="bg-gradient-gold text-primary-foreground shadow-gold">
+        <Button onClick={() => navigate({ to: "/orcamentos/novo", search: { projectId: undefined } })} className="bg-gradient-gold text-primary-foreground shadow-gold">
           <Plus className="h-4 w-4 mr-2" /> Novo orçamento
         </Button>
       </header>
@@ -77,7 +77,7 @@ function QuotesIndex() {
         <div className="text-center py-16 border border-dashed border-border rounded-lg">
           <FileSpreadsheet className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">Nenhum orçamento cadastrado.</p>
-          <Button onClick={() => navigate({ to: "/orcamentos/novo" })} className="mt-4 bg-gradient-gold text-primary-foreground shadow-gold">
+          <Button onClick={() => navigate({ to: "/orcamentos/novo", search: { projectId: undefined } })} className="mt-4 bg-gradient-gold text-primary-foreground shadow-gold">
             <Plus className="h-4 w-4 mr-2" /> Criar primeiro orçamento
           </Button>
         </div>
