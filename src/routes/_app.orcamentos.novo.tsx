@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { QuoteForm } from "@/components/QuoteForm";
 
 export const Route = createFileRoute("/_app/orcamentos/novo")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: { projectId?: number | string }) => ({
     projectId: s.projectId ? Number(s.projectId) : undefined,
   }),
   component: NewQuotePage,
