@@ -117,6 +117,7 @@ export interface Quote {
   paymentConditionId?: number; paymentMethodId?: number; projectId?: number;
   linkedTxIds?: number[];
   acceptedAt?: string; acceptedBy?: string;
+  documents?: ContractDoc[];
   history?: HistoryEntry[];
   createdAt: string; updatedAt: string;
 }
