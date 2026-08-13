@@ -12,6 +12,7 @@ const nav = [
   { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/fornecedores", label: "Fornecedores", icon: Briefcase },
   { to: "/orcamentos", label: "Orçamentos", icon: FileSpreadsheet },
+  { to: "/propostas", label: "Proposta com IA", icon: Sparkles },
   { to: "/projetos", label: "Projetos", icon: FolderKanban },
   { group: "Cadastros" },
   { to: "/cadastros/produtos", label: "Produtos & Serviços", icon: Package },

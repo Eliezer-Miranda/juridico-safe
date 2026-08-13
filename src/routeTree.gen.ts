@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as AppPropostasRouteImport } from './routes/_app.propostas'
 import { Route as AppFornecedoresRouteImport } from './routes/_app.fornecedores'
 import { Route as AppFinanceiroRouteImport } from './routes/_app.financeiro'
 import { Route as AppEstoqueRouteImport } from './routes/_app.estoque'
@@ -56,6 +57,11 @@ const AppRoute = AppRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPropostasRoute = AppPropostasRouteImport.update({
+  id: '/propostas',
+  path: '/propostas',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFornecedoresRoute = AppFornecedoresRouteImport.update({
@@ -223,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/estoque': typeof AppEstoqueRouteWithChildren
   '/financeiro': typeof AppFinanceiroRouteWithChildren
   '/fornecedores': typeof AppFornecedoresRouteWithChildren
+  '/propostas': typeof AppPropostasRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
   '/clientes/$id': typeof AppClientesIdRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/configuracoes': typeof AppConfiguracoesRoute
+  '/propostas': typeof AppPropostasRoute
   '/': typeof AppIndexRoute
   '/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/_app/estoque': typeof AppEstoqueRouteWithChildren
   '/_app/financeiro': typeof AppFinanceiroRouteWithChildren
   '/_app/fornecedores': typeof AppFornecedoresRouteWithChildren
+  '/_app/propostas': typeof AppPropostasRoute
   '/_app/': typeof AppIndexRoute
   '/_app/cadastros/condicoes': typeof AppCadastrosCondicoesRoute
   '/_app/cadastros/produtos': typeof AppCadastrosProdutosRoute
@@ -328,6 +337,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/financeiro'
     | '/fornecedores'
+    | '/propostas'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
     | '/clientes/$id'
@@ -358,6 +368,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/configuracoes'
+    | '/propostas'
     | '/'
     | '/cadastros/condicoes'
     | '/cadastros/produtos'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/_app/estoque'
     | '/_app/financeiro'
     | '/_app/fornecedores'
+    | '/_app/propostas'
     | '/_app/'
     | '/_app/cadastros/condicoes'
     | '/_app/cadastros/produtos'
@@ -449,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/propostas': {
+      id: '/_app/propostas'
+      path: '/propostas'
+      fullPath: '/propostas'
+      preLoaderRoute: typeof AppPropostasRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/fornecedores': {
@@ -745,6 +764,7 @@ interface AppRouteChildren {
   AppEstoqueRoute: typeof AppEstoqueRouteWithChildren
   AppFinanceiroRoute: typeof AppFinanceiroRouteWithChildren
   AppFornecedoresRoute: typeof AppFornecedoresRouteWithChildren
+  AppPropostasRoute: typeof AppPropostasRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCadastrosCondicoesRoute: typeof AppCadastrosCondicoesRoute
   AppCadastrosProdutosRoute: typeof AppCadastrosProdutosRoute
@@ -766,6 +786,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppEstoqueRoute: AppEstoqueRouteWithChildren,
   AppFinanceiroRoute: AppFinanceiroRouteWithChildren,
   AppFornecedoresRoute: AppFornecedoresRouteWithChildren,
+  AppPropostasRoute: AppPropostasRoute,
   AppIndexRoute: AppIndexRoute,
   AppCadastrosCondicoesRoute: AppCadastrosCondicoesRoute,
   AppCadastrosProdutosRoute: AppCadastrosProdutosRoute,
