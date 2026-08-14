@@ -228,6 +228,40 @@ function QuoteView() {
         </div>
       </div>
 
+      <Card className="bg-card border-border print:hidden">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <Paperclip className="h-4 w-4 text-gold" /> Documentos vinculados
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {(quote.documents ?? []).length === 0 && (
+            <p className="text-sm text-muted-foreground">Nenhum arquivo anexado (proposta, PDF assinado, aditivos).</p>
+          )}
+          <ul className="divide-y divide-border">
+            {(quote.documents ?? []).map((d) => (
+              <li key={d.id} className="py-2 flex items-center justify-between text-sm gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{d.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(d.size / 1024).toFixed(0)} KB · {new Date(d.uploadedAt).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <a href={d.dataUrl} download={d.name} className="text-gold hover:underline text-xs inline-flex items-center gap-1">
+                    abrir <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <button onClick={() => removeDoc(d.id)} className="text-muted-foreground hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <Input type="file" accept=".pdf,.docx,.doc,.txt,image/*" onChange={addDoc} />
+        </CardContent>
+      </Card>
+
       {linkedTx && linkedTx.length > 0 && (
         <Card className="bg-card border-border print:hidden">
           <CardHeader>
