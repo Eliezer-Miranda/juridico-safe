@@ -7,9 +7,10 @@ import { formatBRL, formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink, Pencil } from "lucide-react";
+import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink, Pencil, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/orcamentos/$id/")({
@@ -66,6 +67,33 @@ function QuoteView() {
     if (!confirm("Remover parcelas pendentes vinculadas ao orçamento?")) return;
     await removeFinTxFromQuote(quote);
     toast.success("Parcelas removidas");
+  };
+
+  const addDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    if (f.size > 8 * 1024 * 1024) { toast.error("Arquivo maior que 8MB"); return; }
+    const dataUrl = await new Promise<string>((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(String(r.result));
+      r.onerror = () => rej(new Error("erro"));
+      r.readAsDataURL(f);
+    });
+    const now = new Date().toISOString();
+    const docs = [...(quote.documents ?? []), {
+      id: crypto.randomUUID(), name: f.name, type: "proposta",
+      mime: f.type || "application/octet-stream", size: f.size, dataUrl, uploadedAt: now,
+    }];
+    await db.quotes.update(qid, { documents: docs, updatedAt: now });
+    toast.success("Documento anexado");
+  };
+
+  const removeDoc = async (docId: string) => {
+    if (!confirm("Remover este documento?")) return;
+    const docs = (quote.documents ?? []).filter((d) => d.id !== docId);
+    await db.quotes.update(qid, { documents: docs, updatedAt: new Date().toISOString() });
+    toast.success("Documento removido");
   };
 
   const subtotal = quote.items.reduce((s, i) => s + i.quantity * i.unitPrice, 0);
