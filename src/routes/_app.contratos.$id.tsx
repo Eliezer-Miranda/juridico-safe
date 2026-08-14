@@ -199,6 +199,41 @@ function ContractDetail() {
         </div>
       </div>
 
+      {/* Propostas vinculadas */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="font-display flex items-center gap-2">
+            <FileText className="h-4 w-4 text-gold" /> Propostas / orçamentos vinculados
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {linkedQuotes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nenhuma proposta vinculada. Abra um orçamento e use “Acompanhamento da proposta” para vinculá-lo a este contrato.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {linkedQuotes.map((q) => (
+                <li key={q.id} className="py-2 flex items-center justify-between gap-3 text-sm">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{q.number}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Emissão {formatDate(q.issueDate)} · {QUOTE_STATUS_LABEL[q.status] ?? q.status}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-medium">{formatBRL(q.total)}</span>
+                    <Link to="/orcamentos/$id" params={{ id: String(q.id) }} className="text-xs text-gold hover:underline">
+                      abrir
+                    </Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Documentos */}
       <Card className="bg-card border-border">
         <CardHeader>
