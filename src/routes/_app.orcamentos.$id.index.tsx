@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ArrowLeft, Printer, Trash2, FileCheck2, RotateCcw, ExternalLink, Pencil, Paperclip } from "lucide-react";
 import { toast } from "sonner";
+import { QuoteWorkflow } from "@/components/QuoteWorkflow";
 
 export const Route = createFileRoute("/_app/orcamentos/$id/")({
   component: QuoteView,
@@ -255,6 +256,8 @@ function QuoteView() {
           <div className="mx-auto w-72 border-t border-border print:border-gray-400 pt-1">Assinatura</div>
         </div>
       </div>
+
+      <QuoteWorkflow quote={quote} />
 
       <Card className="bg-card border-border print:hidden">
         <CardHeader>

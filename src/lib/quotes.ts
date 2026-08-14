@@ -1,4 +1,4 @@
-import { db, type Quote, type FinTx } from "./db";
+import { db, type Quote, type FinTx, type QuoteStatus } from "./db";
 
 export const quoteSubtotal = (q: Pick<Quote, "items">) =>
   q.items.reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.unitPrice) || 0), 0);
@@ -192,4 +192,78 @@ export const removeFinTxFromQuote = async (quote: Quote) => {
     linkedTxIds: [],
     updatedAt: new Date().toISOString(),
   });
+};
+
+/** Workflow: pipeline order used by the proposal/quote status tracker. */
+export const QUOTE_PIPELINE: Array<{ status: QuoteStatus; label: string; hint: string }> = [
+  { status: "rascunho", label: "Rascunho", hint: "Em elaboração" },
+  { status: "enviado", label: "Enviada", hint: "Enviada ao cliente/fornecedor" },
+  { status: "aprovado", label: "Aprovada", hint: "Aceita pela contraparte" },
+  { status: "faturado", label: "Convertida", hint: "Parcelas geradas no financeiro" },
+];
+
+/** Updates the quote status, registering who/when in the history. */
+export const setQuoteStatus = async (
+  quote: Quote,
+  status: QuoteStatus,
+  actor?: string,
+) => {
+  if (!quote.id) throw new Error("Quote sem id");
+  const now = new Date().toISOString();
+  const hist = quote.history ?? [];
+  hist.push({
+    at: now,
+    description: `Status alterado de "${QUOTE_STATUS_LABEL[quote.status] ?? quote.status}" para "${QUOTE_STATUS_LABEL[status] ?? status}"${actor ? ` por ${actor}` : ""}.`,
+  });
+  const patch: Partial<Quote> = { status, history: hist, updatedAt: now };
+  if (status === "enviado" && !quote.sentAt) patch.sentAt = now;
+  if (status === "aprovado" && !quote.acceptedAt) {
+    patch.acceptedAt = now;
+    patch.acceptedBy = actor ?? quote.acceptedBy;
+  }
+  await db.quotes.update(quote.id, patch);
+};
+
+/** Links (or unlinks when contractId is null) a quote/proposal to an existing contract. */
+export const linkQuoteToContract = async (
+  quote: Quote,
+  contractId: number | null,
+  actor?: string,
+) => {
+  if (!quote.id) throw new Error("Quote sem id");
+  const now = new Date().toISOString();
+  const contract = contractId ? await db.contracts.get(contractId) : null;
+  if (contractId && !contract) throw new Error("Contrato não encontrado");
+
+  const hist = quote.history ?? [];
+  hist.push({
+    at: now,
+    description: contract
+      ? `Proposta vinculada ao contrato ${contract.number}${actor ? ` por ${actor}` : ""}.`
+      : `Vínculo com contrato removido${actor ? ` por ${actor}` : ""}.`,
+  });
+  await db.quotes.update(quote.id, {
+    contractId: contractId ?? undefined,
+    history: hist,
+    updatedAt: now,
+  });
+
+  if (contract?.id) {
+    const chist = contract.history ?? [];
+    chist.push({
+      at: now,
+      description: `Proposta/orçamento ${quote.number} vinculado (${QUOTE_STATUS_LABEL[quote.status] ?? quote.status}).`,
+    });
+    await db.contracts.update(contract.id, { history: chist, updatedAt: now });
+  }
+
+  // Detach: register the removal in the previously linked contract too.
+  if (!contractId && quote.contractId) {
+    const prev = await db.contracts.get(quote.contractId);
+    if (prev?.id) {
+      const phist = prev.history ?? [];
+      phist.push({ at: now, description: `Proposta/orçamento ${quote.number} desvinculado.` });
+      await db.contracts.update(prev.id, { history: phist, updatedAt: now });
+    }
+  }
 };
